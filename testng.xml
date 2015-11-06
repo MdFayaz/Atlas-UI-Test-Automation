@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<suite name="TestSuite">
+	<parameter name="URL" value = "" />
+	<test name="SearchTest">
+		<classes>
+			<class name="org.apache.atlas.seleniumtests.SearchTest"/>
+		</classes>
+	</test>
+</suite>
