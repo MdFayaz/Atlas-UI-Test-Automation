@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<suite name="TestSuite">
-	<parameter name="URL" value = "" />
-	<test name="SearchTest">
+<suite name="AtlasSuite" parallel="tests">
+	<parameter name="URL" value="" />
+
+	<test name="TestExecution">
 		<classes>
-			<class name="org.apache.atlas.seleniumtests.SearchTest"/>
+			<class name="org.apache.atlas.seleniumtests.SearchPageTest" />
+			<class name="org.apache.atlas.seleniumtests.TagsPageTest" />
 		</classes>
 	</test>
 </suite>
