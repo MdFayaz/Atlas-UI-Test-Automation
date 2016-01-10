@@ -18,25 +18,61 @@
 
 package org.atlas.testHelper;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.atlas.utilities.UIAssert;
-import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
+import org.openqa.selenium.support.FindBy;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 /**
  * Base class for test classes.
  */
 public class BaseTestClass extends BaseUITestClass {
 
+	@FindBy(css = "div[data-ng-controller='HeaderController']")
+	protected WebElement headerController;
+
+	@FindBy(css = ".mainLogo")
+	protected WebElement atlasLogo;
+
+	@FindBy(css = ".menuBar")
+	protected WebElement menuBar;
+	
+	@BeforeSuite
+	public void setup() {
+		testExecutionStartTime = System.currentTimeMillis();
+	}
+
+	@AfterSuite
+	public void tearDown() {
+		closeBrowser();
+		AtlasDriverUtility.testSuiteExecutionTime(testExecutionStartTime,
+				" execute entire test suite");
+		/*SendReport.sendReportByEmail("fayazm@mprglobalsolutions.com",
+				"Fayaz@786", "fayazm@mprglobalsolutions.com",
+				"Test Excution Report", "");*/
+		/*CopyReport cp = new CopyReport("/hw/atlas/TER/", new File(AtlasConstants.PWD + "\\test-output"));
+		try {
+			cp.saveFilesToServer("ananya@mprhost.com", "changeme12345");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+	}
+	
 	public void verifyPageLoadSuccessfully() {
+		AtlasDriverUtility.waitForPageLoad(driver, 60);
+		AtlasDriverUtility.waitUntilPageRefresh(driver);
 		validateAtlasLogo();
 		validatePageMenuBar();
 		validateLinks();
 	}
-
+	
 	public void validateAtlasLogo() {
 		AtlasDriverUtility.waitUntilElementVisible(headerController, 10);
 		headerController.click();
@@ -48,7 +84,7 @@ public class BaseTestClass extends BaseUITestClass {
 
 	public void validatePageMenuBar() {
 		String[] actualMenuItems = getMenuLinksName();
-		Assert.assertArrayEquals("Menu Items are displayed as expected",
+		assertArrayEquals("Menu Items are displayed as expected",
 				expectedMenuItems, actualMenuItems);
 	}
 
@@ -69,12 +105,12 @@ public class BaseTestClass extends BaseUITestClass {
 		for (WebElement menuLink : getMenuLinks()) {
 			if (menuLink.getText().equalsIgnoreCase(AtlasConstants.SEARCH)) {
 				menuLink.click();
-				AtlasDriverUtility.waitForAngularToFinish();
-				Assert.assertTrue("Search Link clicked", menuLink.isEnabled());
+				AtlasDriverUtility.waitForPageLoad(getDriver(), 30);
+				assertTrue("Search Link clicked", menuLink.isEnabled());
 			} else if (menuLink.getText().equalsIgnoreCase(AtlasConstants.TAGS)) {
 				menuLink.click();
-				AtlasDriverUtility.waitForAngularToFinish();
-				Assert.assertTrue("Tags Link clicked", menuLink.isEnabled());
+				AtlasDriverUtility.waitForPageLoad(getDriver(), 30);
+				assertTrue("Tags Link clicked", menuLink.isEnabled());
 			}
 		}
 	}

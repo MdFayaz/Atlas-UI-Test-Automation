@@ -18,50 +18,73 @@
 
 package org.atlas.testHelper;
 
+import org.apache.atlas.objectwrapper.WebElementWrapper;
+import org.apache.atlas.utilities.AtlasDriverUtility;
+import org.apache.log4j.PropertyConfigurator;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.testng.log4testng.Logger;
 
+import com.apache.atlas.listener.AtlasDriverEventListener;
 /**
  * Base class for UI test classes.
  */
 public class BaseUITestClass {
+	private static final Logger LOGGER = Logger.getLogger(BaseUITestClass.class);
+	
 
-	@FindBy(css = "div[data-ng-controller='HeaderController']")
-	protected WebElement headerController;
-
-	@FindBy(css = ".mainLogo")
-	protected WebElement atlasLogo;
-
-	@FindBy(css = ".menuBar")
-	protected WebElement menuBar;
-
-	private static WebDriver driver;
+	private static WebDriver ffDriver;
+	protected static EventFiringWebDriver driver;
 	protected static BaseTestClass baseTestClass;
-
+	protected static WebElementWrapper webElement;
+	protected static Logger log;
+	long testExecutionStartTime;
+	
 	public static WebDriver getDriver() {
+		if(ffDriver == null) {
+			ffDriver = new FirefoxDriver();
+			driver = new EventFiringWebDriver(ffDriver);
+			AtlasDriverEventListener driverLister = new AtlasDriverEventListener();
+			driver.register(driverLister);
+			driver.manage().window().maximize();
+			webElement = new WebElementWrapper();
+			initPageElements();
+		}
 		return driver;
 	}
-	
-	protected static void openBrowser() {
-		driver = new FirefoxDriver();
-		driver.manage().window().maximize();
-		initPageElements();
-	}
 
+	public BaseTestClass launchApp() {
+		long startTime = System.currentTimeMillis();
+		driver.get(AtlasConstants.UI_URL);
+		LOGGER.info("Opened a URL: " + AtlasConstants.UI_URL);
+		AtlasDriverUtility.waitForPageLoad(driver, 30);
+		AtlasDriverUtility.pageLoadedTime(startTime, AtlasConstants.UI_URL);
+		return PageFactory.initElements(driver, BaseTestClass.class);
+	}
+	 
+	
 	public static void closeBrowser() {
 		if (driver != null) {
+			AtlasDriverUtility.waitForPageLoad(driver, AtlasConstants.DRIVER_TIMEOUT);
 			driver.close();
 			driver.quit();
 			driver = null;
 		}
 	}
-	
-	private static void initPageElements(){
-		if(baseTestClass == null)
-			baseTestClass = PageFactory.initElements(getDriver(), BaseTestClass.class);
+
+	private static void initPageElements() {
+		loadProps();
+		if (baseTestClass == null)
+			baseTestClass = PageFactory.initElements(getDriver(),
+					BaseTestClass.class);
 		PageFactory.initElements(driver, BaseUITestClass.class);
+	}
+
+	private static void loadProps() {
+		log = Logger.getLogger(BaseUITestClass.class);
+		PropertyConfigurator.configure("log4j.properties");
+		log.debug("Loaded props");
 	}
 }
