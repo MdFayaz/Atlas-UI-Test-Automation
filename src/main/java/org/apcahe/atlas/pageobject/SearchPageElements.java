@@ -5,7 +5,7 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class SearchPageElements extends BaseTestPageElements {
+public class SearchPageElements extends HomePageElements {
 
 	@FindBy(css = ".mainSearch")
 	public WebElement mainSearch;
@@ -19,9 +19,6 @@ public class SearchPageElements extends BaseTestPageElements {
 	@FindBy(css = "button[type='submit']")
 	public WebElement searchIcon;
 
-	@FindBy(css = ".datatable")
-	public WebElement resultTable;
-
 	@FindBy(css = ".tabsearchResult")
 	public WebElement resultCount;
 
@@ -30,15 +27,6 @@ public class SearchPageElements extends BaseTestPageElements {
 
 	@FindBy(css = ".mainTags")
 	public WebElement tagsSection;
-
-	@FindBy(css=".pull-right .pagination")
-	public WebElement paginationBoard;
-	
-	@FindBy(xpath = "//*[contains(@ng-class, 'noPrevious')]")
-	public WebElement paginationPrevious;
-
-	@FindBy(xpath = "//*[contains(@ng-class, 'noNext')]")
-	public WebElement paginationNext;
 
 	@FindBy(css = ".datatable .tabsearchanchor")
 	public List<WebElement> searchResultsTags;

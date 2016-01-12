@@ -1,9 +1,6 @@
 package com.apache.atlas.listener;
 
-import org.apache.atlas.utilities.AtlasDriverUtility;
-import org.apache.atlas.utilities.MiscUtils;
-import org.atlas.testHelper.AtlasConstants;
-import org.atlas.testHelper.BaseUITestClass;
+import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,7 +8,7 @@ import org.openqa.selenium.support.events.AbstractWebDriverEventListener;
 import org.testng.log4testng.Logger;
 
 public class AtlasDriverEventListener extends AbstractWebDriverEventListener {
-	WebDriver driver = BaseUITestClass.getDriver();
+	WebDriver driver = WebDriverWrapper.getDriver();
 	private static final Logger LOGGER = Logger
 			.getLogger(AtlasDriverEventListener.class);
 	

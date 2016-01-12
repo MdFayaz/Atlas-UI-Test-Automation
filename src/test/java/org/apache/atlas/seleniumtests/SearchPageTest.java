@@ -2,10 +2,10 @@ package org.apache.atlas.seleniumtests;
 
 import java.util.Arrays;
 
+import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
 import org.atlas.testHelper.AtlasConstants;
-import org.atlas.testHelper.BaseUITestClass;
 import org.atlas.ui.pages.SearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -17,14 +17,14 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 //@Listeners(JyperionListener.class)
-public class SearchPageTest extends BaseUITestClass {
+public class SearchPageTest extends WebDriverWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(SearchPageTest.class);
 
 	private SearchPage searchPage = null;
 	
 	@BeforeClass
-	public void load(){
+	public void loadSearchTest(){
 		searchPage = new SearchPage();
 		searchPage.launchApp();
 	}
@@ -37,17 +37,17 @@ public class SearchPageTest extends BaseUITestClass {
 	@AfterMethod
 	public void afterMethod(ITestResult result){
 		String testMethodName = result.getMethod().getMethodName();
-		if(result.getStatus() == result.FAILURE){
+		if(result.getStatus() == ITestResult.FAILURE){
 			AtlasDriverUtility.getScreenshot(testMethodName);
 		}
 		AtlasDriverUtility.testCaseExecutionTime(testMethodName);
 	}
 	
 	@Test
-	public void testPageElements() {
-		LOGGER.info("STARTED: Test testPageElements");
-		baseTestClass.verifyPageLoadSuccessfully();
-		LOGGER.info("ENDED: Test testPageElements");
+	public void testPageElementsFromSearchPage() {
+		LOGGER.info("STARTED: Test testPageElements from SearchPage");
+		homePage.verifyPageLoadSuccessfully();
+		LOGGER.info("ENDED: Test testPageElements from SearchPage");
 	}
 
 	@Test(dataProvider = AtlasConstants.SEARCH_STRING, dataProviderClass = SearchPage.class)
@@ -165,11 +165,11 @@ public class SearchPageTest extends BaseUITestClass {
 		String SEARCH_QUERY = "Table";
 		searchPage.searchQuery(SEARCH_QUERY);
 		if(searchPage.getSearchResultCount() > 0){
-			searchPage.clickOnTag("Employee:Fact");
 			Assert.assertFalse(SearchPage.isPreviousButtonDisabled, "Previous Button disabled");
-			Assert.assertTrue(SearchPage.isPreviousButtonEnabled, "Previous Button eanabled");
 			Assert.assertTrue(SearchPage.isNextButtonEnabled, "Next Button enabled");
-			Assert.assertFalse(SearchPage.isNextButtonDisabled, "Next Button disabled");
+			searchPage.clickOnTag("Employee:Fact");
+			Assert.assertTrue(SearchPage.isPreviousButtonEnabled, "Previous Button enabled");
+			Assert.assertFalse(!SearchPage.isNextButtonDisabled, "Next Button disabled");
 		}
 		LOGGER.info("STARTED: Test validateTagInSearchResult");
 	}

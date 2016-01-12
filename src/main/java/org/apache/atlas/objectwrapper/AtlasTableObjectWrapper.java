@@ -1,5 +1,6 @@
 package org.apache.atlas.objectwrapper;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -33,5 +34,15 @@ public class AtlasTableObjectWrapper {
 			}
 		}
 		return tableHeaders;
+	}
+	
+	HashMap<String, Integer> colToIndex = new HashMap<String, Integer>();
+	
+	public void getColNameToIndex(){
+		List<WebElement> tableHeaders = resultTable.findElements(By.tagName("th"));
+		for(int index = 0; index < tableHeaders.size(); index++){
+			WebElement header = tableHeaders.get(index);
+			colToIndex.put(header.getText(), index);
+		}
 	}
 }

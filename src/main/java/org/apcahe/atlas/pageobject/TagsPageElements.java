@@ -5,9 +5,9 @@ import java.util.List;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class TagsPageElements extends BaseTestPageElements {
+public class TagsPageElements extends HomePageElements {
 
-	@FindBy(css = "a[data-ui-sref='tags']")
+	@FindBy(css = "a[href='#!/tags']")
 	public WebElement tagTabLink;
 
 	@FindBy(css = ".appForm h4")
