@@ -1,31 +1,35 @@
 package org.atlas.ui.pages;
 
+import org.apache.atlas.seleniumtests.HomePageTest;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
 import org.apcahe.atlas.pageobject.TagsPageElements;
-import org.atlas.testHelper.BaseTestClass;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
 public class TagsPage extends AtlasDriverUtility {
 
 	static WebDriver driver = getDriver();
-	private static final Logger LOGGER = Logger.getLogger(BaseTestClass.class);
+	private static final Logger LOGGER = Logger.getLogger(HomePageTest.class);
 	TagsPageElements tagsPageElements = null;
-
+	
 	public TagsPage() {
 		tagsPageElements = PageFactory.initElements(driver,
 				TagsPageElements.class);
 	}
 
 	public void navigateToTagsTab() {
-		waitForPageLoad(driver, 30);
+		waitForPageLoad(driver, 60);
+		AtlasDriverUtility.customWait(30);
 		if (webElement.isElementExists(tagsPageElements.tagTabLink)) {
-			tagsPageElements.tagTabLink.click();
+			WebElement e = tagsPageElements.tagTabLink;
+			e.click();
 			waitUntilPageRefresh(driver);
 		} else {
-			log.error("Tags tab not present");
+			LOGGER.error("Tags tab not present");
 		}
+		waitForPageLoad(driver, 60);
 	}
 
 	public String getPageHeader() {

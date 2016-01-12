@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.atlas.testHelper.AtlasConstants;
-import org.atlas.testHelper.BaseTestClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
@@ -21,7 +21,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 
-public class AtlasDriverUtility extends BaseTestClass {
+public class AtlasDriverUtility  extends WebDriverWrapper {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(AtlasDriverUtility.class);
@@ -31,7 +31,7 @@ public class AtlasDriverUtility extends BaseTestClass {
 		return wait.until(ExpectedConditions.visibilityOf(element));
 	}
 
-	public void customWait(int timeInSec) {
+	public static void customWait(int timeInSec) {
 		try {
 			Thread.sleep(1000 * timeInSec);
 		} catch (InterruptedException e) {
@@ -39,7 +39,7 @@ public class AtlasDriverUtility extends BaseTestClass {
 		}
 	}
 
-	public static void waitForPageLoad(WebDriver driver, int timeoutInSeconds) {
+	public static boolean waitForPageLoad(WebDriver driver, int timeoutInSeconds) {
 		ExpectedCondition<Boolean> pageLoadCondition = new ExpectedCondition<Boolean>() {
 			public Boolean apply(WebDriver driver) {
 				return ((JavascriptExecutor) driver).executeScript(
@@ -50,7 +50,7 @@ public class AtlasDriverUtility extends BaseTestClass {
 			driver = getDriver();
 		}
 		WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
-		wait.until(pageLoadCondition);
+		return wait.until(pageLoadCondition);
 	}
 
 	public static void waitUntilPageRefresh(WebDriver driver) {
@@ -101,7 +101,8 @@ public class AtlasDriverUtility extends BaseTestClass {
 		File sourceFile = screenshot.getScreenshotAs(OutputType.FILE);
 		try {
 			Reporter.log("<a href=" + fileName + " target='_blank' >" + fileName + "</a>");
-			FileUtils.copyFile(sourceFile, new File(fileName));
+			FileUtils.copyFile(sourceFile, new File(AtlasConstants.SCREENSHOTS_DIR
+					+ fileName + ".jpeg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
