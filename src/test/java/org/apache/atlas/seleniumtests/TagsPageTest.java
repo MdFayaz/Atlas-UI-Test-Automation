@@ -58,10 +58,9 @@ public class TagsPageTest extends WebDriverWrapper {
 	@Test
 	public void duplicateTagName(){
 		LOGGER.info("STARTED: Test duplicateTagName");
-		String name = "TestInput";
 		tagsPage.createExistingTag();
 		String actualMsg = tagsPage.getNotificationMessage().trim();
-		Assert.assertEquals(actualMsg, "Cannot redefine type " + name);
+		Assert.assertEquals(actualMsg, "Cannot redefine type " + tagsPage.getTagName());
 		LOGGER.info("ENDED: Test duplicateTagName");
 	}
 	

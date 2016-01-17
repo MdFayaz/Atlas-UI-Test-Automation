@@ -172,5 +172,21 @@ public class SearchPageTest extends WebDriverWrapper {
 		Assert.assertTrue(searchPage.validateSearchTagsTag("FunctionalTestTag"), "Validating tag in search page tags");
 		LOGGER.info("ENDED: Test validateFunctionalTestTag");
 	}
+	
+	//TODO: Bug [#HDPDGI-320] in application so commented the following test
+	/*@Test
+	public void validateToolsInSearchResult(){
+		LOGGER.info("STARTED: Test validateTagInSearchResult");
+		String SEARCH_QUERY = "Table";
+		searchPage.searchQuery(SEARCH_QUERY);
+		if(searchPage.getSearchResultCount() > 0){
+			Assert.assertFalse(SearchPage.isPreviousButtonDisabled, "Button 'Previous' disabled");
+			Assert.assertTrue(SearchPage.isNextButtonEnabled, "Button 'Next' enabled");
+			searchPage.clickOnTool("BA1");
+			Assert.assertTrue(SearchPage.isPreviousButtonEnabled, "Button 'Previous'  enabled");
+			Assert.assertFalse(!SearchPage.isNextButtonDisabled, "Button 'Next' disabled");
+		}
+		LOGGER.info("STARTED: Test validateToolsInSearchResult");
+	}*/
 
 }

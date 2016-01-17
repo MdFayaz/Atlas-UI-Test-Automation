@@ -94,11 +94,19 @@ public class TagsPage extends AtlasDriverUtility {
 		return this;
 	}
 
+	private String tagName = "";
+	
+	public String getTagName(){
+		return tagName;
+	}
+
+	
 	public void createExistingTag() {
 		List<WebElement> parentTags = tagsPageElements.parentTagSelectionField
 				.findElements(By.cssSelector(".ng-binding"));
 		if (parentTags.size() > 0) {
-			enterTagName(parentTags.get(0).getText());
+			tagName = parentTags.get(0).getText();
+			enterTagName(tagName);
 			webElement
 			.clearAndSendKeys(tagsPageElements.addAttributeName, "AutomationTest");
 			saveTagName();
@@ -116,6 +124,7 @@ public class TagsPage extends AtlasDriverUtility {
 	}
 	
 	public String getNotificationMessage(){
+		AtlasDriverUtility.customWait(5);
 		return tagsPageElements.notificationBanner.getText();
 	}
 }

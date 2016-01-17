@@ -13,6 +13,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 
 public class SearchPage extends AtlasDriverUtility {
@@ -46,6 +48,10 @@ public class SearchPage extends AtlasDriverUtility {
 	public String[] getSearchResultTableHeaders() {
 		return new AtlasTableObjectWrapper(webElement,
 				searchPageElements.resultTable).getTableHeaders();
+	}
+	
+	public boolean isTableDisplayed(){
+		return webElement.isElementExists(searchPageElements.resultTable);
 	}
 
 	public HashMap<String, HashMap<String, WebElement>> nameToTagsMap = new HashMap<String, HashMap<String, WebElement>>();
@@ -147,7 +153,10 @@ public class SearchPage extends AtlasDriverUtility {
 							isPreviousButtonEnabled = searchPageElements.paginationPrevious
 									.isEnabled();
 							boolean nextLinkEnabled = searchPageElements.paginationNext.isEnabled();
-							isNextButtonEnabled = isTagFound ? nextLinkEnabled : !nextLinkEnabled;
+							if((paginationFields.size()) == anchorTagIndex){
+								isNextButtonEnabled = !nextLinkEnabled;
+							}
+							isNextButtonEnabled = nextLinkEnabled;
 						}
 					}
 				}
@@ -170,7 +179,83 @@ public class SearchPage extends AtlasDriverUtility {
 	    }		
 		return isTagDisplayed;
 	}
+	
+	public void clickOnTool(String tagName) {
+		if (webElement.isElementExists(searchPageElements.paginationBoard)) {
+			List<WebElement> paginationFields = searchPageElements.paginationBoard
+					.findElements(By.tagName("li"));
+			int size = paginationFields.size();
+			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
+				WebElement listItem = paginationFields.get(anchorTagIndex);
+				if (listItem.getAttribute("class").contains("active")) {
+					if (paginationFields.get(anchorTagIndex - 1).getText()
+							.equals("Previous")) {
+						isPreviousButtonDisabled = !searchPageElements.paginationPrevious
+								.isEnabled();
+						isNextButtonDisabled = searchPageElements.paginationNext
+								.isEnabled();
+					}
+					if (paginationFields.get(size - 1).getText().equals("Next")) {
+						isPreviousButtonEnabled = searchPageElements.paginationPrevious
+								.isEnabled();
+						boolean nextLinkEnabled = searchPageElements.paginationNext.isEnabled();
+						isNextButtonEnabled = isTagFound ? nextLinkEnabled : !nextLinkEnabled;
+					}
+				}
+				getAllToolsFromSearchResultTable(tagName);
+				WebElement anchorTag = listItem
+						.findElement(By.tagName("a"));
+				anchorTag.click();
+				AtlasDriverUtility.waitUntilPageRefresh(driver);
+			}
+		}
+	}
+	
+	private void getAllToolsFromSearchResultTable(String colName) {
+		List<WebElement> tableRows = searchPageElements.resultTable
+				.findElements(By.tagName("tr"));
+		for (int index = 1; index < tableRows.size(); index++) {
+			List<WebElement> tableCellData = tableRows.get(index).findElements(
+					By.tagName("td"));
+			WebElement firstCol = tableCellData.get(0).findElement(
+					By.tagName("a"));
+			String key = firstCol.getText();
+			if (key.equalsIgnoreCase(colName)) {
+				if (tableCellData.size() > 2) {
+					WebElement fifthCol = tableCellData.get(4).findElement(
+							By.tagName("img"));
+					fifthCol.click();
+				}
+			}
+		}
+		AtlasDriverUtility.customWait(5);
+		handleModal();
+	}
 
+	private void handleModal(){
+		WebElement parentDiv1 = driver.findElement(By
+				.xpath("//*[@class='modal-content']"));
+		parentDiv1.click();
+		String toolTitle = parentDiv1.findElement(By.tagName("h4")).getText();
+		Assert.assertEquals(toolTitle, "Add tag");
+		WebElement selectTag = driver.findElement(By.id("tagDefinition"));
+		selectTag.click();
+		Select slt = new Select(selectTag);
+		slt.selectByValue("FTest");
+		AtlasDriverUtility.customWait(10);
+		WebElement saveBtn = driver.findElement(By
+				.xpath("//*[@class='btn btn-success']"));
+		saveBtn.click();
+		AtlasDriverUtility.customWait(10);
+		// error msg is showing after clicking on save button
+		String errorMsg = "trait=FTest is already defined for entity=566dedbc-496d-4552-a702-2249298ca761";
+		if (errorMsg != null) {
+			WebElement cancelBtn = driver.findElement(By
+					.xpath("//*[@class='btn btn-warning']"));
+			cancelBtn.click();
+		}
+	}
+	
 	@DataProvider(name = AtlasConstants.SEARCH_STRING)
 	public static String[][] searchData() {
 		String[][] object = new String[][] { {

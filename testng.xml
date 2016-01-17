@@ -11,7 +11,7 @@
 			 <class name="org.apache.atlas.seleniumtests.HomePageTest" />
 			 <class name="org.apache.atlas.seleniumtests.SearchPageTest" /> 
 			 <class name="org.apache.atlas.seleniumtests.TagsPageTest" 	/>
-			<class name="org.apache.atlas.seleniumtests.LineagePageTest" />
+			 <class name="org.apache.atlas.seleniumtests.LineagePageTest" />
 		</classes>
 	</test>
 </suite>
