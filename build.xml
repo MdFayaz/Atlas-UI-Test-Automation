@@ -26,27 +26,6 @@ How to use: go to the command prompt and in project directory, type 'ant generat
 		</xslt>
 	</target>
 
-	<target name="SendReport" depends="generateReport">
-		<zip destfile="${basedir}/testng-xslt/output.zip" basedir="${basedir}/testng-xslt" />
-		<mail tolist="fayazm@mprglobalsolutions.com" 
-			from="fayazm@mprglobalsolutions.com" subject="Atlas Automation Test Execution Report"
-			mailhost="smtp.gmail.com" 
-			mailport="465" ssl="true" 
-			user="fayazm@mprglobalsolutions.com" 
-			password="Fayaz@6138">
-		<!-- Uncomment to add additional email ids
-			<from address="test@test.com"></from>
-			<replyto address="replyto@test.com"></replyto>
-			<to address="sento@test.com"></to>
-			<message>The Test nightly build has completed</message> -->
-			<attachments>
-				<fileset dir="${basedir}/testng-xslt/">
-					<include name="**/*.zip" />
-				</fileset>
-			</attachments>
-		</mail>
-	</target>
-	
 	<target name="genRep">
 		 <testng classpathref="test-path"
 			            outputdir="${test-results.dir}"
@@ -54,7 +33,7 @@ How to use: go to the command prompt and in project directory, type 'ant generat
 			            useDefaultListeners="false"
 			            listeners="org.uncommons.reportng.HTMLReporter,org.uncommons.reportng.JUnitXMLReporter">
 			      <xmlfileset dir="." includes="testng.xml"/>
-			      <sysproperty key="org.uncommons.reportng.title" value="My Test Report"/>
+			      <sysproperty key="org.uncommons.reportng.title" value="Atlas Automation Report"/>
 			    </testng>
 	</target>
 </project>
