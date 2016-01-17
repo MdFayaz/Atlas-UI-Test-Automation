@@ -2,13 +2,16 @@
 
 <suite name="AtlasSuite" parallel="tests">
 	<parameter name="browserType" value="firefox" />
-
+	<listeners>
+		<listener class-name="com.apache.atlas.listener.AtlasTestReportListener" />
+	</listeners>
 
 	<test name="TestExecution">
 		<classes>
-			<class name="org.apache.atlas.seleniumtests.HomePageTest" />
-			<class name="org.apache.atlas.seleniumtests.SearchPageTest" />
-			<class name="org.apache.atlas.seleniumtests.TagsPageTest" />
+			 <class name="org.apache.atlas.seleniumtests.HomePageTest" />
+			 <class name="org.apache.atlas.seleniumtests.SearchPageTest" /> 
+			 <class name="org.apache.atlas.seleniumtests.TagsPageTest" 	/>
+			<class name="org.apache.atlas.seleniumtests.LineagePageTest" />
 		</classes>
 	</test>
 </suite>
