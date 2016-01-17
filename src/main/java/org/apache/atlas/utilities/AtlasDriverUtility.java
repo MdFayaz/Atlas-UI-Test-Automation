@@ -109,41 +109,4 @@ public class AtlasDriverUtility  extends WebDriverWrapper {
 		LOGGER.info("EXITED: getScreenshot with fileName " + fileName);
 	}
 	
-	/**
-	 * Uncomment the below code to add screenshot to test execution reports.
-	 * CAUTION: the code needs to debug / make sure it is working fine
-	 *
-	 * @param fileName
-	 */
-/*	public static void getScreenshot(ITestNGMethod fileName) {
-		LOGGER.info("ENTERED: getScreenshot with fileName " + fileName);
-		TakesScreenshot screenshot = ((TakesScreenshot) driver);
-		String nameScreenshot = fileName.getXmlTest().getParameter("browser")
-				.toUpperCase()
-				+ "_"
-				+ fileName.getTestClass().getRealClass().getSimpleName()
-				+ "_" + fileName.getMethodName();
-		File sourceFile = screenshot.getScreenshotAs(OutputType.FILE);
-		try {
-			String path = getPath(nameScreenshot);
-			FileUtils.copyFile(sourceFile, new File(path));
-			Reporter.log("<a href=" + path + " target='_blank' >" + getFileName(nameScreenshot) + "</a>");
-//			FileUtils.copyFile(sourceFile, new File(fileName.getMethodName()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		LOGGER.info("EXITED: getScreenshot with fileName " + fileName);
-	}
-	
-	private static String getFileName(String nameTest) throws IOException {
-		DateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss");
-		Date date = new Date();
-		return dateFormat.format(date) + "_" + nameTest + ".png";
-	}
-
-	private static String getPath(String nameTest) throws IOException {
-		File directory = new File(".");
-		String newFileNamePath = directory.getCanonicalPath() + "\\target\\surefire-reports\\screenShots\\" + getFileName(nameTest);
-		return newFileNamePath;
-	}*/
 }

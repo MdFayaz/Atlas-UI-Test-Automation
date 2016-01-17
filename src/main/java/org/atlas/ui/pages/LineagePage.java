@@ -2,7 +2,6 @@ package org.atlas.ui.pages;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apcahe.atlas.pageobject.LineagePageElements;
@@ -11,7 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.log4testng.Logger;
 
-public class LineagePage extends AtlasDriverUtility {
+public class LineagePage extends HomePage {
 
 	private static Logger LOGGER = Logger.getLogger(LineagePage.class);
 
@@ -24,43 +23,43 @@ public class LineagePage extends AtlasDriverUtility {
 				LineagePageElements.class);
 	}
 
-	public boolean validateBackToPageLink(){
+	public boolean validateBackToPageLink() {
 		boolean isLinkEnabled = false;
-		if(webElement.isElementExists(lineagePageElements.backToResultLink)) {
-			isLinkEnabled = webElement.isElementEnabled(lineagePageElements.backToResultLink);
+		if (webElement.isElementExists(lineagePageElements.backToResultLink)) {
+			isLinkEnabled = webElement
+					.isElementEnabled(lineagePageElements.backToResultLink);
+		} else {
+			LOGGER.error("Back to Result link doesn't exist");
 		}
 		return isLinkEnabled;
 	}
-	
-	public void clickOnBackToPageLink(){
+
+	public void clickOnBackToPageLink() {
 		AtlasDriverUtility.customWait(10);
-		if(webElement.isElementExists(lineagePageElements.backToResultLink)) {
+		if (webElement.isElementExists(lineagePageElements.backToResultLink)) {
 			lineagePageElements.backToResultLink.click();
 		}
-		AtlasDriverUtility.customWait(10);
+		AtlasDriverUtility.customWait(2);
 	}
-	
-	public boolean isPageDataDisplayed(){
+
+	public boolean isPageDataDisplayed() {
 		boolean isTagDetailsExists = false;
-		if(webElement.isElementExists(lineagePageElements.tagDetailsSection)) {
-			isTagDetailsExists = webElement.isElementEnabled(lineagePageElements.tagDetailsSection);
+		AtlasDriverUtility.waitForPageLoad(driver, 10);
+		if (webElement.isElementExists(lineagePageElements.tagDetailsSection)) {
+			isTagDetailsExists = webElement
+					.isElementEnabled(lineagePageElements.tagDetailsSection);
 		}
 		return isTagDetailsExists;
 	}
-	
-	private boolean isGraphSectionLoaded() {
-		AtlasDriverUtility.customWait(3);
-		return AtlasDriverUtility.waitUntilElementVisible(
-				lineagePageElements.graphSpinner, 20).isDisplayed();
-	}
-	
+
 	public boolean validateGraphSection() {
+		AtlasDriverUtility.waitForPageLoad(driver, 10);
 		boolean isElementsLoadedProperly = false;
 		WebElement graphSection = lineagePageElements.graphSection;
-		if (isGraphSectionLoaded()
-				&& webElement.isElementExists(graphSection)) {
-			String resetButtonText = graphSection.findElement(By.tagName("button")).getText();
-			if(resetButtonText!= null && resetButtonText.equals("Reset")){
+		if (webElement.isElementExists(graphSection)) {
+			String resetButtonText = graphSection.findElement(
+					By.tagName("button")).getText();
+			if (resetButtonText != null && resetButtonText.equals("Reset")) {
 				isElementsLoadedProperly = true;
 			}
 			if (!webElement
@@ -77,32 +76,35 @@ public class LineagePage extends AtlasDriverUtility {
 							: false;
 				}
 			}
+		} else {
+			LOGGER.error("Perhaps graph section not loaded");
 		}
 		return isElementsLoadedProperly;
 	}
-	
-	public void validateImage() {
-		searchPage.searchQuery("Fact");
-		clickOnSearchData("0de1ae11-b498-484f-965f-1019501d3870");
+
+	public void goToLineagePageFor(String nameToLineage) {
+		String name = nameToLineage.substring(0, nameToLineage.indexOf(":"));
+		String lineageName = nameToLineage.substring(nameToLineage.indexOf(":") + 1,
+				nameToLineage.length());
+		searchPage.searchQuery(name);
+		clickOnSearchData(lineageName);
+		AtlasDriverUtility.customWait(5);
 	}
-	
+
 	public static boolean isPreviousButtonDisabled = false;
 	public static boolean isNextButtonDisabled = false;
 	public static boolean isPreviousButtonEnabled = false;
 	public static boolean isNextButtonEnabled = false;
 	boolean isTagFound = false;
-	
+
 	public void clickOnSearchData(String tagName) {
-		AtlasDriverUtility.customWait(10);
+		AtlasDriverUtility.customWait(5);
 		if (webElement.isElementExists(lineagePageElements.paginationBoard)) {
 			List<WebElement> paginationFields = lineagePageElements.paginationBoard
 					.findElements(By.tagName("li"));
 			int size = paginationFields.size();
 			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
 				WebElement listItem = paginationFields.get(anchorTagIndex);
-				if(isTagFound){
-					break;
-				}
 				if (listItem.getAttribute("class").contains("active")) {
 					if (paginationFields.get(anchorTagIndex - 1).getText()
 							.equals("Previous")) {
@@ -111,20 +113,29 @@ public class LineagePage extends AtlasDriverUtility {
 						isNextButtonDisabled = lineagePageElements.paginationNext
 								.isEnabled();
 					}
-					if (paginationFields.get(size - 1).getText().equals("Next")) {
-						isPreviousButtonEnabled = lineagePageElements.paginationPrevious
-								.isEnabled();
-						isNextButtonEnabled = !lineagePageElements.paginationNext
-								.isEnabled();
+					if (!isTagFound) {
+						if (paginationFields.get(size - 1).getText()
+								.equals("Next")) {
+							isPreviousButtonEnabled = lineagePageElements.paginationPrevious
+									.isEnabled();
+							boolean nextLinkEnabled = lineagePageElements.paginationNext
+									.isEnabled();
+							isNextButtonEnabled = isTagFound ? nextLinkEnabled
+									: !nextLinkEnabled;
+						}
 					}
 				}
 				getAllTagsFromSearchResultTable();
-				boolean a = searchTableForTag(tagName);
-				System.out.println("anchor: " + a);
+				searchTableForTag(tagName);
+				if (isTagFound) {
+					break;
+				}
 				WebElement nextPage = listItem.findElement(By.tagName("a"));
 				nextPage.click();
 				AtlasDriverUtility.waitUntilPageRefresh(driver);
 			}
+		} else {
+			LOGGER.error("Pagination is not displayed");
 		}
 	}
 
@@ -143,23 +154,32 @@ public class LineagePage extends AtlasDriverUtility {
 			String key = firstCol.getText();
 			nameToElement.put(key, firstCol);
 		}
-		display();
 	}
 
-	private void display() {
-		HashMap<String, WebElement> e = nameToElement;
-		for (Entry<String, WebElement> ee : e.entrySet()) {
-			System.out.println(ee.getKey() + "!!!!!" + ee.getValue());
-		}
-		System.out.println("#######");
-	}
-	
-	private boolean searchTableForTag(String tagName) { 
+	private boolean searchTableForTag(String tagName) {
 		if (nameToElement != null && nameToElement.containsKey(tagName)) {
 			nameToElement.get(tagName).click();
 			isTagFound = true;
-			waitForPageLoad(driver, 120);
+			AtlasDriverUtility.customWait(3);
+		} else {
+			LOGGER.error("Map 'nameToElement' doesn't contain key: " + tagName);
 		}
 		return isTagFound;
+	}
+
+	public boolean clickOnAllTabs() {
+		List<WebElement> allTabs = lineagePageElements.tabs;
+		boolean allTabsClicked = false;
+		int tabsSize = allTabs.size();
+		int tabsClicked = 0;
+		for (WebElement tab : allTabs) {
+			tab.click();
+			tabsClicked++;
+			AtlasDriverUtility.customWait(2);
+		}
+		if (tabsSize == tabsClicked) {
+			allTabsClicked = true;
+		}
+		return allTabsClicked;
 	}
 }

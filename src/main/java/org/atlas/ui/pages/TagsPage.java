@@ -1,12 +1,16 @@
 package org.atlas.ui.pages;
 
+import java.util.List;
+
 import org.apache.atlas.seleniumtests.HomePageTest;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
 import org.apcahe.atlas.pageobject.TagsPageElements;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
 
 public class TagsPage extends AtlasDriverUtility {
 
@@ -68,7 +72,8 @@ public class TagsPage extends AtlasDriverUtility {
 	}
 
 	public TagsPage selectParentTag(String parentTagName) {
-		// TODO: code to select text area for parent tag name
+		Select selectParent = new Select(tagsPageElements.parentTagSelectionField);
+		selectParent.selectByValue(parentTagName);
 		return this;
 	}
 
@@ -89,4 +94,28 @@ public class TagsPage extends AtlasDriverUtility {
 		return this;
 	}
 
+	public void createExistingTag() {
+		List<WebElement> parentTags = tagsPageElements.parentTagSelectionField
+				.findElements(By.cssSelector(".ng-binding"));
+		if (parentTags.size() > 0) {
+			enterTagName(parentTags.get(0).getText());
+			webElement
+			.clearAndSendKeys(tagsPageElements.addAttributeName, "AutomationTest");
+			saveTagName();
+		} else {
+			LOGGER.warn("No existing tags to create.");
+		}
+	}
+	
+	public boolean validateParentTag(String parentTagName) {		
+		boolean isTagDisplayed = false;
+		for ( WebElement we: tagsPageElements.options) {	        
+	        if ( we.getText().equals(parentTagName) ) isTagDisplayed = true;
+	    }
+		return isTagDisplayed;
+	}
+	
+	public String getNotificationMessage(){
+		return tagsPageElements.notificationBanner.getText();
+	}
 }

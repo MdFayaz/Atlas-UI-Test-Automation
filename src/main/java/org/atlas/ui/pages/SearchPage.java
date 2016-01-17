@@ -80,51 +80,32 @@ public class SearchPage extends AtlasDriverUtility {
 			}
 			
 		}
-//		display();
 	}
 
-	/*private void display() {
-		for (Entry<String, HashMap<String, WebElement>> tags : nameToTagsMap
-				.entrySet()) {
-			String key = tags.getKey();
-			System.out.println("!!!!!!!!!!!");
-			System.out.println(key);
-			HashMap<String, WebElement> e = nameToTagsMap.get(key);
-			for (Entry<String, WebElement> ee : e.entrySet()) {
-				System.out.println(ee.getKey() + "!!!!!" + ee.getValue());
-			}
-			System.out.println("#######");
-		}
-	}*/
-
 	boolean isTagFound = false;
-	/*private boolean searchTableForTag(String tagName){
-		if(tagName.contains(":")) {
-			String name = tagName.substring(0, tagName.indexOf(":"));
-			String tagNameToClick = tagName.substring(tagName.indexOf(":") + 1,
-					tagName.length());
-			if (nameToTagsMap != null && nameToTagsMap.containsKey(name)) {
-				HashMap<String, WebElement> tagsMap = nameToTagsMap.get(name);
-				tagsMap.get(tagNameToClick).click();
-				isTagFound = true;
-				waitForPageLoad(driver, 120);
-			} else {
-				LOGGER.error("Given tagName not found " + tagName);
-			}
-		} else {
-//			System.out.println("in else: " + nameToElement);
-//			System.out.println("is true? "+nameToElement.containsKey(tagName));
-			if(nameToElement != null && nameToElement.containsKey(tagName)){
-				nameToElement.get(tagName).click();
-				isTagFound = true;
-				waitForPageLoad(driver, 120);
-			} else {
-				System.out.println("in else tagName: " + tagName);
-				System.out.println("isTagFound: "+isTagFound);
-			}
+	
+	public boolean searchFromTags(String expectedTag, boolean isResultExpected) {
+		List<WebElement> listOfTags = searchPageElements.tagsSection
+				.findElements(By.cssSelector(".list-group a"));
+		boolean isExpectedTagFound = false;
+		for(WebElement tag : listOfTags){
+			if(tag.getText().equals(expectedTag)){
+				tag.click();
+				AtlasDriverUtility.waitUntilPageRefresh(driver);
+				isExpectedTagFound = true;
+				LOGGER.info("Expected tag found in tags section");
+				break;
+			} 
 		}
-		return isTagFound;
-	}*/
+		if(!isExpectedTagFound){
+			LOGGER.error("Expected tag " + expectedTag + " not found in tags section");
+		}
+		int resultantData = getSearchResultCount();
+		if(resultantData > 0 && isResultExpected){
+			return true;
+		}
+		return isExpectedTagFound;
+	}
 	
 	private void searchTableForTag(String tagName){
 		String name = tagName.substring(0, tagName.indexOf(":"));
@@ -173,7 +154,6 @@ public class SearchPage extends AtlasDriverUtility {
 				getAllTagsFromSearchResultTable();
 				searchTableForTag(tagName);
 				if(isTagFound){
-					System.out.println("Expected link " + tagName + " found");
 					WebElement nextPage = listItem.findElement(By.tagName("a"));
 					nextPage.click();
 					break;
@@ -182,11 +162,18 @@ public class SearchPage extends AtlasDriverUtility {
 			}
 		}
 	}
+	
+	public boolean validateSearchTagsTag(String tagsTagName) {		
+		boolean isTagDisplayed = false;
+		for ( WebElement we: searchPageElements.tagsSection.findElements(By.tagName("a"))) {			        
+	        if ( we.getAttribute("title").equals(tagsTagName) ) isTagDisplayed = true;
+	    }		
+		return isTagDisplayed;
+	}
 
 	@DataProvider(name = AtlasConstants.SEARCH_STRING)
 	public static String[][] searchData() {
 		String[][] object = new String[][] { {
-				// "*",
 				"Table", "from Table select Table.name" } };
 		return object;
 	}

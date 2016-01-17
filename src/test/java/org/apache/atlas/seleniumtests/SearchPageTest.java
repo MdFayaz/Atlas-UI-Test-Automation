@@ -10,13 +10,9 @@ import org.atlas.ui.pages.SearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-//@Listeners(JyperionListener.class)
 public class SearchPageTest extends WebDriverWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(SearchPageTest.class);
@@ -27,20 +23,6 @@ public class SearchPageTest extends WebDriverWrapper {
 	public void loadSearchTest(){
 		searchPage = new SearchPage();
 		searchPage.launchApp();
-	}
-	
-	@BeforeMethod
-	public void beforeMethod(){
-		AtlasConstants.START_TIME = System.currentTimeMillis();
-	}
-	
-	@AfterMethod
-	public void afterMethod(ITestResult result){
-		String testMethodName = result.getMethod().getMethodName();
-		if(result.getStatus() == ITestResult.FAILURE){
-			AtlasDriverUtility.getScreenshot(testMethodName);
-		}
-		AtlasDriverUtility.testCaseExecutionTime(testMethodName);
 	}
 	
 	@Test
@@ -60,7 +42,7 @@ public class SearchPageTest extends WebDriverWrapper {
 	}
 
 	@Test
-	public void verifySearchResultNegative() {
+	public void invalidSearchResult() {
 		LOGGER.info("STARTED: Test verifySearchResultNegative");
 		String SEARCH_QUERY = "abc123!@#";
 		searchPage.searchQuery(SEARCH_QUERY);
@@ -171,7 +153,24 @@ public class SearchPageTest extends WebDriverWrapper {
 			Assert.assertTrue(SearchPage.isPreviousButtonEnabled, "Previous Button enabled");
 			Assert.assertFalse(!SearchPage.isNextButtonDisabled, "Next Button disabled");
 		}
-		LOGGER.info("STARTED: Test validateTagInSearchResult");
+		LOGGER.info("ENDED: Test validateTagInSearchResult");
+	}
+	
+	@Test
+	public void validateTagSearchResult(){
+		LOGGER.info("STARTED: Test validateTagSearchResult");
+		boolean resultCount = searchPage.searchFromTags("Dimension", true);
+		Assert.assertTrue(resultCount,
+				"Search result displayed after selecting tags from Tags section");
+		LOGGER.info("ENDED: Test validateTagSearchResult");
+	}
+	
+	@Test
+	public void validateFunctionalTestTag(){
+		LOGGER.info("STARTED: Test validateFunctionalTestTag");
+//		testPageElements();
+		Assert.assertTrue(searchPage.validateSearchTagsTag("FunctionalTestTag"), "Validating tag in search page tags");
+		LOGGER.info("ENDED: Test validateFunctionalTestTag");
 	}
 
 }

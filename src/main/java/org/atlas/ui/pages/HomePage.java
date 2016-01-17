@@ -39,10 +39,6 @@ public class HomePage extends AtlasDriverUtility {
 				listOfMenuItems =  homePageElements.menuBar.findElements(By.cssSelector("a"));
 			}
 		} 
-		System.out.println("Menu size: " + listOfMenuItems.size());
-		for(WebElement e : listOfMenuItems){
-			System.out.println(e + " <><> " + e.getText());
-		}
 		return listOfMenuItems;
 	}
 
@@ -64,9 +60,8 @@ public class HomePage extends AtlasDriverUtility {
 			isLinkClicked = clickOnMenu(menuLink);
 			break;
 		case ABOUT:
-			System.out.println("menuLink: " + menuLink);
 			isLinkClicked = clickOnMenu(menuLink);
-			AboutPage.handlePopup();
+			new AboutPage().handlePopup();
 			break;
 		case HELP:
 			isLinkClicked = clickOnMenu(menuLink);
@@ -84,7 +79,6 @@ public class HomePage extends AtlasDriverUtility {
 	private boolean clickOnMenu(String menuName) {
 		boolean isLinkEnabled = false;
 		for (WebElement menuLink : getMenuLinks()) {
-			System.out.println(">>>> menuLink: " + menuLink.getText());
 			if (menuLink.getText().equalsIgnoreCase(menuName)) {
 				menuLink.click();
 				AtlasDriverUtility.waitForPageLoad(getDriver(), 30);
