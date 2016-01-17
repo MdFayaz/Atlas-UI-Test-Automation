@@ -168,7 +168,7 @@ public class SearchPageTest extends WebDriverWrapper {
 	@Test
 	public void validateFunctionalTestTag(){
 		LOGGER.info("STARTED: Test validateFunctionalTestTag");
-//		testPageElements();
+		searchPage.navigateToSearchTab();
 		Assert.assertTrue(searchPage.validateSearchTagsTag("FunctionalTestTag"), "Validating tag in search page tags");
 		LOGGER.info("ENDED: Test validateFunctionalTestTag");
 	}

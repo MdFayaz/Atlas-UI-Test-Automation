@@ -29,10 +29,14 @@ public class SearchPage extends AtlasDriverUtility {
 				SearchPageElements.class);
 	}
 
-	public void searchQuery(String text) {
+	public void navigateToSearchTab(){
 		customWait(10);
 		searchPageElements.searchTab.click();
 		waitForPageLoad(driver, 10);
+	}
+	
+	public void searchQuery(String text) {
+		navigateToSearchTab();
 		webElement.clearAndSendKeys(searchPageElements.searchBox, text);
 		searchPageElements.searchBox.sendKeys(Keys.ENTER);
 		long startTime = System.currentTimeMillis();
