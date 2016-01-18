@@ -1,17 +1,14 @@
 package org.apache.atlas.seleniumtests;
 
-import junit.framework.Assert;
-
 import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
 import org.atlas.testHelper.AtlasConstants;
 import org.atlas.ui.pages.LineagePage;
 import org.atlas.ui.pages.SearchPage;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
+import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 public class LineagePageTest extends WebDriverWrapper {
@@ -23,21 +20,17 @@ public class LineagePageTest extends WebDriverWrapper {
 
 	@BeforeClass
 	public void loadTagsTest() {
+		AtlasConstants.START_TIME = System.currentTimeMillis();
 		lineagePage = new LineagePage();
 		searchPage = new SearchPage();
 		lineagePage.launchApp();
 	}
-
-	@AfterMethod
-	public void getMethodName(ITestResult result) {
-		if (result.getStatus() == ITestResult.FAILURE) {
-			AtlasDriverUtility.getScreenshot(result.getMethod().getMethodName());
-		}
-	}
 	
-	@BeforeMethod
-	public void beforeMethod() {
-		AtlasConstants.START_TIME = System.currentTimeMillis();
+	@AfterClass
+	public void tearDown() {
+		closeBrowser();
+		AtlasDriverUtility.testSuiteExecutionTime(testExecutionStartTime,
+				" execute entire test suite");
 	}
 	
 	@Test
@@ -45,27 +38,37 @@ public class LineagePageTest extends WebDriverWrapper {
 		LOGGER.info("STARTED: Test testPageElements from Lineage Page");
 		homePage.verifyPageLoadSuccessfully();
 		LOGGER.info("ENDED: Test testPageElements from Lineage Page");
-	}
+	}	
+	
 	@Test
 	public void validateBackToPageFunctionality() {
-		LOGGER.info("ENTERED: validateBackToPageLink");
+		LOGGER.info("STARTED: validateBackToPageLink");
 		searchPage.searchQuery("Metric");
-		int resultCount = searchPage.getSearchResultCount();
 		lineagePage.clickOnSearchData("134a83e1-68fc-4614-a0bb-8c24634dab29");
+		Assert.assertEquals(lineagePage.validateBackToPageLink(), true, "BackToPage link enabled");
 		lineagePage.clickOnBackToPageLink();
-		Assert.assertTrue("Search result persist ",
-				resultCount == searchPage.getSearchResultCount());
-		LOGGER.info("EXITED: validateBackToPageLink");
+		Assert.assertEquals(searchPage.isTableDisplayed(), true,
+				"Table Validation after navigating back from lineage page");
+		LOGGER.info("ENDED: validateBackToPageLink");
 	}
 	
 	@Test
 	public void validateLineagePage(){
-		LOGGER.info("ENTERED: validateLineagePage");
-		 lineagePage.validateImage();
-		 Assert.assertEquals("BackToPage link enabled", lineagePage.validateBackToPageLink(), true);
-		 Assert.assertEquals("Details section displayed", true, lineagePage.isPageDataDisplayed());
-		 Assert.assertEquals("Graphs Section loaded", true, lineagePage.validateGraphSection());
-		LOGGER.info("EXITED: validateLineagePage");
+		LOGGER.info("STARTED: validateLineagePage");
+		 lineagePage.goToLineagePageFor("Fact:0de1ae11-b498-484f-965f-1019501d3870");
+		 Assert.assertEquals(true, lineagePage.validateGraphSection(), "Graphs Section loaded");
+		 Assert.assertEquals(true, lineagePage.isPageDataDisplayed(), "Details section displayed");
+		LOGGER.info("ENDED: validateLineagePage");
+	}
+	
+	@Test
+	public void validateLineagePageTabs() {
+		LOGGER.info("STARTED: validateLineagePageTabs");
+		lineagePage
+				.goToLineagePageFor("Fact:0de1ae11-b498-484f-965f-1019501d3870");
+		boolean allTabsClicked = lineagePage.clickOnAllTabs();
+		Assert.assertTrue(allTabsClicked, "All tabs clicked in lineage page");
+		LOGGER.info("ENDED: validateLineagePageTabs");
 	}
 	
 }

@@ -13,6 +13,8 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 
 public class SearchPage extends AtlasDriverUtility {
@@ -27,10 +29,14 @@ public class SearchPage extends AtlasDriverUtility {
 				SearchPageElements.class);
 	}
 
-	public void searchQuery(String text) {
+	public void navigateToSearchTab(){
 		customWait(10);
 		searchPageElements.searchTab.click();
 		waitForPageLoad(driver, 10);
+	}
+	
+	public void searchQuery(String text) {
+		navigateToSearchTab();
 		webElement.clearAndSendKeys(searchPageElements.searchBox, text);
 		searchPageElements.searchBox.sendKeys(Keys.ENTER);
 		long startTime = System.currentTimeMillis();
@@ -46,6 +52,10 @@ public class SearchPage extends AtlasDriverUtility {
 	public String[] getSearchResultTableHeaders() {
 		return new AtlasTableObjectWrapper(webElement,
 				searchPageElements.resultTable).getTableHeaders();
+	}
+	
+	public boolean isTableDisplayed(){
+		return webElement.isElementExists(searchPageElements.resultTable);
 	}
 
 	public HashMap<String, HashMap<String, WebElement>> nameToTagsMap = new HashMap<String, HashMap<String, WebElement>>();
@@ -80,51 +90,32 @@ public class SearchPage extends AtlasDriverUtility {
 			}
 			
 		}
-//		display();
 	}
 
-	/*private void display() {
-		for (Entry<String, HashMap<String, WebElement>> tags : nameToTagsMap
-				.entrySet()) {
-			String key = tags.getKey();
-			System.out.println("!!!!!!!!!!!");
-			System.out.println(key);
-			HashMap<String, WebElement> e = nameToTagsMap.get(key);
-			for (Entry<String, WebElement> ee : e.entrySet()) {
-				System.out.println(ee.getKey() + "!!!!!" + ee.getValue());
-			}
-			System.out.println("#######");
-		}
-	}*/
-
 	boolean isTagFound = false;
-	/*private boolean searchTableForTag(String tagName){
-		if(tagName.contains(":")) {
-			String name = tagName.substring(0, tagName.indexOf(":"));
-			String tagNameToClick = tagName.substring(tagName.indexOf(":") + 1,
-					tagName.length());
-			if (nameToTagsMap != null && nameToTagsMap.containsKey(name)) {
-				HashMap<String, WebElement> tagsMap = nameToTagsMap.get(name);
-				tagsMap.get(tagNameToClick).click();
-				isTagFound = true;
-				waitForPageLoad(driver, 120);
-			} else {
-				LOGGER.error("Given tagName not found " + tagName);
-			}
-		} else {
-//			System.out.println("in else: " + nameToElement);
-//			System.out.println("is true? "+nameToElement.containsKey(tagName));
-			if(nameToElement != null && nameToElement.containsKey(tagName)){
-				nameToElement.get(tagName).click();
-				isTagFound = true;
-				waitForPageLoad(driver, 120);
-			} else {
-				System.out.println("in else tagName: " + tagName);
-				System.out.println("isTagFound: "+isTagFound);
-			}
+	
+	public boolean searchFromTags(String expectedTag, boolean isResultExpected) {
+		List<WebElement> listOfTags = searchPageElements.tagsSection
+				.findElements(By.cssSelector(".list-group a"));
+		boolean isExpectedTagFound = false;
+		for(WebElement tag : listOfTags){
+			if(tag.getText().equals(expectedTag)){
+				tag.click();
+				AtlasDriverUtility.waitUntilPageRefresh(driver);
+				isExpectedTagFound = true;
+				LOGGER.info("Expected tag found in tags section");
+				break;
+			} 
 		}
-		return isTagFound;
-	}*/
+		if(!isExpectedTagFound){
+			LOGGER.error("Expected tag " + expectedTag + " not found in tags section");
+		}
+		int resultantData = getSearchResultCount();
+		if(resultantData > 0 && isResultExpected){
+			return true;
+		}
+		return isExpectedTagFound;
+	}
 	
 	private void searchTableForTag(String tagName){
 		String name = tagName.substring(0, tagName.indexOf(":"));
@@ -166,14 +157,16 @@ public class SearchPage extends AtlasDriverUtility {
 							isPreviousButtonEnabled = searchPageElements.paginationPrevious
 									.isEnabled();
 							boolean nextLinkEnabled = searchPageElements.paginationNext.isEnabled();
-							isNextButtonEnabled = isTagFound ? nextLinkEnabled : !nextLinkEnabled;
+							if((paginationFields.size()) == anchorTagIndex){
+								isNextButtonEnabled = !nextLinkEnabled;
+							}
+							isNextButtonEnabled = nextLinkEnabled;
 						}
 					}
 				}
 				getAllTagsFromSearchResultTable();
 				searchTableForTag(tagName);
 				if(isTagFound){
-					System.out.println("Expected link " + tagName + " found");
 					WebElement nextPage = listItem.findElement(By.tagName("a"));
 					nextPage.click();
 					break;
@@ -182,11 +175,94 @@ public class SearchPage extends AtlasDriverUtility {
 			}
 		}
 	}
+	
+	public boolean validateSearchTagsTag(String tagsTagName) {		
+		boolean isTagDisplayed = false;
+		for ( WebElement we: searchPageElements.tagsSection.findElements(By.tagName("a"))) {			        
+	        if ( we.getAttribute("title").equals(tagsTagName) ) isTagDisplayed = true;
+	    }		
+		return isTagDisplayed;
+	}
+	
+	public void clickOnTool(String tagName) {
+		if (webElement.isElementExists(searchPageElements.paginationBoard)) {
+			List<WebElement> paginationFields = searchPageElements.paginationBoard
+					.findElements(By.tagName("li"));
+			int size = paginationFields.size();
+			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
+				WebElement listItem = paginationFields.get(anchorTagIndex);
+				if (listItem.getAttribute("class").contains("active")) {
+					if (paginationFields.get(anchorTagIndex - 1).getText()
+							.equals("Previous")) {
+						isPreviousButtonDisabled = !searchPageElements.paginationPrevious
+								.isEnabled();
+						isNextButtonDisabled = searchPageElements.paginationNext
+								.isEnabled();
+					}
+					if (paginationFields.get(size - 1).getText().equals("Next")) {
+						isPreviousButtonEnabled = searchPageElements.paginationPrevious
+								.isEnabled();
+						boolean nextLinkEnabled = searchPageElements.paginationNext.isEnabled();
+						isNextButtonEnabled = isTagFound ? nextLinkEnabled : !nextLinkEnabled;
+					}
+				}
+				getAllToolsFromSearchResultTable(tagName);
+				WebElement anchorTag = listItem
+						.findElement(By.tagName("a"));
+				anchorTag.click();
+				AtlasDriverUtility.waitUntilPageRefresh(driver);
+			}
+		}
+	}
+	
+	private void getAllToolsFromSearchResultTable(String colName) {
+		List<WebElement> tableRows = searchPageElements.resultTable
+				.findElements(By.tagName("tr"));
+		for (int index = 1; index < tableRows.size(); index++) {
+			List<WebElement> tableCellData = tableRows.get(index).findElements(
+					By.tagName("td"));
+			WebElement firstCol = tableCellData.get(0).findElement(
+					By.tagName("a"));
+			String key = firstCol.getText();
+			if (key.equalsIgnoreCase(colName)) {
+				if (tableCellData.size() > 2) {
+					WebElement fifthCol = tableCellData.get(4).findElement(
+							By.tagName("img"));
+					fifthCol.click();
+				}
+			}
+		}
+		AtlasDriverUtility.customWait(5);
+		handleModal();
+	}
 
+	private void handleModal(){
+		WebElement parentDiv1 = driver.findElement(By
+				.xpath("//*[@class='modal-content']"));
+		parentDiv1.click();
+		String toolTitle = parentDiv1.findElement(By.tagName("h4")).getText();
+		Assert.assertEquals(toolTitle, "Add tag");
+		WebElement selectTag = driver.findElement(By.id("tagDefinition"));
+		selectTag.click();
+		Select slt = new Select(selectTag);
+		slt.selectByValue("FTest");
+		AtlasDriverUtility.customWait(10);
+		WebElement saveBtn = driver.findElement(By
+				.xpath("//*[@class='btn btn-success']"));
+		saveBtn.click();
+		AtlasDriverUtility.customWait(10);
+		// error msg is showing after clicking on save button
+		String errorMsg = "trait=FTest is already defined for entity=566dedbc-496d-4552-a702-2249298ca761";
+		if (errorMsg != null) {
+			WebElement cancelBtn = driver.findElement(By
+					.xpath("//*[@class='btn btn-warning']"));
+			cancelBtn.click();
+		}
+	}
+	
 	@DataProvider(name = AtlasConstants.SEARCH_STRING)
 	public static String[][] searchData() {
 		String[][] object = new String[][] { {
-				// "*",
 				"Table", "from Table select Table.name" } };
 		return object;
 	}

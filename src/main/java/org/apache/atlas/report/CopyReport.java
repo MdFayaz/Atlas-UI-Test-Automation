@@ -19,7 +19,6 @@ public class CopyReport {
 		this.remoteDest = destinationDir;
 		this.localSrc = localFileDir;
 	}
-//	"ananya@mprhost.com", "changeme12345"
 	public void saveFilesToServer(String username, String password)
 			throws IOException {
 		FTPClient ftp = new FTPClient();
@@ -35,10 +34,8 @@ public class CopyReport {
 		ftp.login(username, password);
 		ftp.enterLocalPassiveMode(); //mode to pass firewall
 		
-		System.out.println("Connected to server.");
 		log.info("Connected to server.");
 		log.info(ftp.getReplyString());
-		System.out.println(ftp.getReplyString());
 		
 		ftp.changeWorkingDirectory(remoteDest);
 		ftp.setFileType(FTPClient.BINARY_FILE_TYPE);

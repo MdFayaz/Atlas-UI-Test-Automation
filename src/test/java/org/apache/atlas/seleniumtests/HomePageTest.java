@@ -24,15 +24,11 @@ import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.atlas.utilities.UIAssert;
 import org.apache.log4j.Logger;
-import org.atlas.testHelper.AtlasConstants;
 import org.atlas.testHelper.Menu;
 import org.atlas.ui.pages.HomePage;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
@@ -46,7 +42,7 @@ public class HomePageTest extends WebDriverWrapper {
 	private HomePage homePage = null;
 	
 	@BeforeSuite
-	public void init(){
+	public void setup(){
 		getDriver();
 	}
 
@@ -75,72 +71,42 @@ public class HomePageTest extends WebDriverWrapper {
 		 */
 	}
 
-	@BeforeMethod
-	public void beforeMethod() {
-		AtlasConstants.START_TIME = System.currentTimeMillis();
-	}
-
-	@AfterMethod
-	public void afterMethod(ITestResult result) {
-		String testMethodName = result.getMethod().getMethodName();
-		if (result.getStatus() == ITestResult.FAILURE) {
-			AtlasDriverUtility.getScreenshot(testMethodName);
-		}
-		AtlasDriverUtility.testCaseExecutionTime(testMethodName);
-	}
-
 	@Test
 	public void validateAtlasLogo() {
-		LOGGER.info("ENTERED: validateAtlasLogo");
+		LOGGER.info("STARTED: validateAtlasLogo");
 		UIAssert.assertDisplayed(homePage.homePageElements.atlasLogo,
 				"Atlas Logo");
 		AtlasDriverUtility.waitForPageLoad(driver, 60);
 		homePage.validateLogo();
-		LOGGER.info("EXITED: validateAtlasLogo");
+		LOGGER.info("ENDED: validateAtlasLogo");
 	}
 
-	//TODO: duplicated with validateMenuLinks
 	@Test
 	public void validateMenuLinks() {
-		LOGGER.info("ENTERED: validatePageMenuBar");
+		LOGGER.info("STARTED: validatePageMenuBar");
 		AtlasDriverUtility.waitForPageLoad(driver, 60);
 		String[] actualMenuItems = homePage.getActualMenuLinksName();
 		String[] expectedMenuItems = homePage.getExpectedPageMenuItems();
 		Assert.assertEquals(actualMenuItems, expectedMenuItems,
 				"ValidatePageMenuBar Items");
-		LOGGER.info("EXITED: validatePageMenuBar");
+		LOGGER.info("ENDED: validatePageMenuBar");
 	}
-
-	/*@Test
-	public void validateMenuLinksClickable() {
-		LOGGER.info("ENTERED: validateMenuLinks");
-		AtlasDriverUtility.waitForPageLoad(driver, 60);
-		Assert.assertTrue(homePage.validateLink(Menu.SEARCH.toString()),
-				Menu.SEARCH.toString() + LINK_CLICKED);
-		Assert.assertTrue(homePage.validateLink(Menu.TAGS.toString()),
-				Menu.TAGS.toString() + LINK_CLICKED);
-		Assert.assertTrue(homePage.validateLink(Menu.HELP.toString()),
-				Menu.HELP.toString() + LINK_CLICKED);
-		Assert.assertTrue(homePage.validateLink(Menu.ABOUT.toString()),
-				Menu.ABOUT.toString() + LINK_CLICKED);
-		LOGGER.info("EXITED: validateMenuLinks");
-	}*/
 
 	@Test 
 	public void validateHelpLink() {
-		LOGGER.info("ENTERED: validateHelpLink");
+		LOGGER.info("STARTED: validateHelpLink");
 		AtlasDriverUtility.waitForPageLoad(driver, 60);
 		Assert.assertTrue(homePage.validateLink(Menu.HELP.toString()),
 				Menu.HELP.toString() + LINK_CLICKED);
-		LOGGER.info("EXITED: validateHelpLink");
+		LOGGER.info("ENDED: validateHelpLink");
 	}
 	
 	@Test 
 	public void validateAboutLink() {
-		LOGGER.info("ENTERED: validateAboutLink");
+		LOGGER.info("STARTED: validateAboutLink");
 		AtlasDriverUtility.waitForPageLoad(driver, 60);
 		Assert.assertTrue(homePage.validateLink(Menu.ABOUT.toString()),
 				Menu.ABOUT.toString() + LINK_CLICKED);
-		LOGGER.info("EXITED: validateAboutLink");
+		LOGGER.info("ENDED: validateAboutLink");
 	}
 }

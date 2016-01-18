@@ -33,4 +33,7 @@ public class TagsPageElements extends HomePageElements {
 	
 	@FindBy(css = "span[class='ng-binding ng-scope']")
 	public WebElement notificationBanner;
+	
+	@FindBy(xpath = ".//*[@id='ParentTag']/option")
+	public List<WebElement> options;
 }

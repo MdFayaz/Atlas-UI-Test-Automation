@@ -1,18 +1,14 @@
 package org.apache.atlas.seleniumtests;
 
 import org.apache.atlas.objectwrapper.WebDriverWrapper;
-import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
 import org.atlas.testHelper.AtlasConstants;
 import org.atlas.ui.pages.TagsPage;
 import org.testng.Assert;
-import org.testng.ITestResult;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-//@Listeners(JyperionListener.class)
 public class TagsPageTest extends WebDriverWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(TagsPageTest.class);
@@ -23,13 +19,6 @@ public class TagsPageTest extends WebDriverWrapper {
 	public void loadTagsTest(){
 		tagsPage = new TagsPage();
 		tagsPage.launchApp();
-	}
-	
-	@AfterMethod
-	public void getMethodName(ITestResult result){
-		if(result.getStatus() == ITestResult.FAILURE){
-			AtlasDriverUtility.getScreenshot(result.getMethod().getMethodName());
-		}
 	}
 	
 	@BeforeMethod
@@ -59,9 +48,36 @@ public class TagsPageTest extends WebDriverWrapper {
 		tagsPage.navigateToTagsTab();
 		tagsPage.
 		enterTagName("TestInput").
+		selectParentTag("Dimension").
 		addAddtribute().
 		enterAttributeName("TestAttr").
 		saveTagName();
 		LOGGER.info("ENDED: Test Create Attribute");
+	}
+	
+	@Test
+	public void duplicateTagName(){
+		LOGGER.info("STARTED: Test duplicateTagName");
+		tagsPage.createExistingTag();
+		String actualMsg = tagsPage.getNotificationMessage().trim();
+		Assert.assertEquals(actualMsg, "Cannot redefine type " + tagsPage.getTagName());
+		LOGGER.info("ENDED: Test duplicateTagName");
+	}
+	
+	@Test
+	public void addFunctionalTestTag(){
+		LOGGER.info("STARTED: Test add Tag");
+		tagsPage.navigateToTagsTab();
+		tagsPage.enterTagName("FunctionalTestTag").
+		saveTagName();
+		LOGGER.info("ENDED: Test add Tag");
+	}
+	
+	@Test
+	public void validateFunctionalTestTag(){
+		LOGGER.info("STARTED: Test validateFunctionalTestTag");
+		tagsPage.navigateToTagsTab();
+		Assert.assertTrue(tagsPage.validateParentTag("FunctionalTestTag"), "Validating tag in tags page sections");
+		LOGGER.info("ENDED: Test validateFunctionalTestTag");
 	}
 }

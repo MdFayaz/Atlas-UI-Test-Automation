@@ -11,17 +11,16 @@ public class AtlasDriverEventListener extends AbstractWebDriverEventListener {
 	WebDriver driver = WebDriverWrapper.getDriver();
 	private static final Logger LOGGER = Logger
 			.getLogger(AtlasDriverEventListener.class);
-	
+
 	@Override
 	public void afterClickOn(WebElement elementName, WebDriver arg1) {
 		try {
 			LOGGER.info(elementName.getTagName() + " tag with text / name "
 					+ elementName.getText() + " clicked");
-			/*AtlasDriverUtility.getScreenshot(AtlasConstants.PWD
-					+ "\\test-output\\screenshots\\" + MiscUtils.getDate()
-					+ ".jpg");*/
 		} catch (StaleElementReferenceException sere) {
 			LOGGER.info("After clicking element was dettached from DOM.");
 		}
 	}
+
+	
 }
