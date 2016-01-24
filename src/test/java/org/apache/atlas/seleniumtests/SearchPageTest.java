@@ -12,6 +12,7 @@ import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlTest;
 
 public class SearchPageTest extends WebDriverWrapper {
 
@@ -19,12 +20,12 @@ public class SearchPageTest extends WebDriverWrapper {
 
 	private SearchPage searchPage = null;
 	
-	@BeforeClass
-	public void loadSearchTest(){
+	@BeforeClass(description = "SearchPage Test Setup")
+	public void loadSearchTest(XmlTest config){
 		searchPage = new SearchPage();
 		searchPage.launchApp();
 	}
-	
+
 	@Test
 	public void testPageElementsFromSearchPage() {
 		LOGGER.info("STARTED: Test testPageElements from SearchPage");
@@ -32,20 +33,17 @@ public class SearchPageTest extends WebDriverWrapper {
 		LOGGER.info("ENDED: Test testPageElements from SearchPage");
 	}
 
-	@Test(dataProvider = AtlasConstants.SEARCH_STRING, dataProviderClass = SearchPage.class)
-	public void searchTestMethod(String... searchToken) {
+	@Test
+	public void validateSearchFunctionalty() {
 		LOGGER.info("STARTED: Test searchTestMethod");
-		for (String token : searchToken) {
-			searchPage.searchQuery(token.toString());
-		}
+		searchPage.searchQuery("Fact");
 		LOGGER.info("ENDED: Test searchTestMethod");
 	}
 
-	@Test
-	public void invalidSearchResult() {
+	@Test(dataProvider = AtlasConstants.INVALID_SEARCH_STRING, dataProviderClass = SearchPage.class)
+	public void invalidSearchResult(String invalidQuery) {
 		LOGGER.info("STARTED: Test verifySearchResultNegative");
-		String SEARCH_QUERY = "abc123!@#";
-		searchPage.searchQuery(SEARCH_QUERY);
+		searchPage.searchQuery(invalidQuery);
 
 		Assert.assertTrue(searchPage.searchPageElements.noResultFound.isDisplayed(),
 				"An Alert Banner displayed");
@@ -70,7 +68,6 @@ public class SearchPageTest extends WebDriverWrapper {
 		LOGGER.info("STARTED: Test validateSearchResult");
 		String SEARCH_QUERY = "Table";
 		searchPage.searchQuery(SEARCH_QUERY);
-		AtlasDriverUtility.waitUntilPageRefresh(getDriver());
 		String expectedMessage = searchPage.searchPageElements.resultCount.getText();
 		if(searchPage.getSearchResultCount() > 0){
 			Assert.assertTrue(searchPage.getSearchResultCount() > 0, expectedMessage);
@@ -79,17 +76,14 @@ public class SearchPageTest extends WebDriverWrapper {
 	}
 
 	@Test(dataProvider = AtlasConstants.SEARCH_STRING, dataProviderClass = SearchPage.class)
-	public void validatePagination(String... searchToken) {
+	public void validatePagination(String token) {
 		LOGGER.info("STARTED: Test validatePagination");
-
-		for (String token : searchToken) {
 			searchPage.searchQuery(token.toString());
 			int searchCount = searchPage.getSearchResultCount();
 			if (searchCount == 0) {
 				LOGGER.info("No results found");
 				Assert.assertTrue(!webElement.isElementExists(searchPage.searchPageElements.resultTable), 
 						"Table not displayed for no result");
-				break;
 			}
 			LOGGER.info("Searching with query : " + token
 					+ " to assert with row count as " + searchCount);
@@ -118,7 +112,6 @@ public class SearchPageTest extends WebDriverWrapper {
 						.contains(AtlasConstants.BUTTON_ATTRIBUTE_AS_DISBALED),
 						"Next button enabled");
 			}
-		}
 		LOGGER.info("ENDED: Test validatePagination");
 	}
 

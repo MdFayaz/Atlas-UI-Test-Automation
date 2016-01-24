@@ -23,6 +23,5 @@ public class AboutPage extends HomePage {
 		aboutDialogElements.aboutDialog.click();
 		aboutDialogTitle = aboutDialogElements.aboutDialogHeader.getText();
 		String versionText = aboutDialogElements.version.getText();
-		System.out.println(aboutDialogTitle + " <<>> " + versionText);
 	}
 }

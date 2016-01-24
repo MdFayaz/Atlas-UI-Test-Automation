@@ -104,7 +104,6 @@ public class LineagePage extends HomePage {
 			List<WebElement> paginationFields = lineagePageElements.paginationBoard
 					.findElements(By.tagName("li"));
 			int size = paginationFields.size();
-			System.out.println("size: " + size);
 			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
 				WebElement listItem = paginationFields.get(anchorTagIndex);
 				if (listItem.getAttribute("class").contains("active")) {
@@ -115,7 +114,6 @@ public class LineagePage extends HomePage {
 						isNextButtonDisabled = lineagePageElements.paginationNext
 								.isEnabled();
 					}
-					System.out.println("isTagFound: " + isTagFound);
 					if (!isTagFound) {
 						if (paginationFields.get(size - 1).getText()
 								.equals("Next")) {
@@ -131,7 +129,6 @@ public class LineagePage extends HomePage {
 				getAllTagsFromSearchResultTable();
 				searchTableForTag(tagName);
 				if (isTagFound) {
-					System.out.println("isTagFound: " + tagName + " anchorIndex: " + anchorTagIndex);
 					nameToElement = null;
 					nameToElement = new HashMap<String, WebElement>();
 					isTagFound = false;

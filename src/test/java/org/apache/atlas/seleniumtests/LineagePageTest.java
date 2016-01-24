@@ -1,15 +1,13 @@
 package org.apache.atlas.seleniumtests;
 
 import org.apache.atlas.objectwrapper.WebDriverWrapper;
-import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apache.log4j.Logger;
-import org.atlas.testHelper.AtlasConstants;
 import org.atlas.ui.pages.LineagePage;
 import org.atlas.ui.pages.SearchPage;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlTest;
 
 public class LineagePageTest extends WebDriverWrapper {
 
@@ -18,19 +16,11 @@ public class LineagePageTest extends WebDriverWrapper {
 	private SearchPage searchPage = null;
 	long testExecutionStartTime;
 
-	@BeforeClass
-	public void loadTagsTest() {
-		AtlasConstants.START_TIME = System.currentTimeMillis();
+	@BeforeClass(description = "LineagePage Test Setup")
+	public void loadLineagePageTest(XmlTest config) {
 		lineagePage = new LineagePage();
 		searchPage = new SearchPage();
 		lineagePage.launchApp();
-	}
-	
-	@AfterClass
-	public void tearDown() {
-		closeBrowser();
-		AtlasDriverUtility.testSuiteExecutionTime(testExecutionStartTime,
-				" execute entire test suite");
 	}
 	
 	@Test
