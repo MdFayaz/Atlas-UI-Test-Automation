@@ -1,6 +1,5 @@
 package org.atlas.ui.pages;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -277,28 +276,28 @@ public class SearchPage extends AtlasDriverUtility {
 		return new String[][] { {testParams.get("invalidSearchData")} };
 	}
 	
+	@DataProvider(name = AtlasConstants.LINEAGE_DATA)
+	public static String[][] backToResultLink(ITestContext context) {
+		Map<String, String> testParams = context.getCurrentXmlTest()
+				.getLocalParameters();
+		return new String[][] { {testParams.get("validateLineage")} };
+	}
 
 	@DataProvider(name = AtlasConstants.SEARCH_STRING)
 	public static Iterator<Object[]> fileDataProvider(ITestContext context) {
 		// Get the input file path from the ITestContext
 		String inputFile = context.getCurrentXmlTest().getParameter(
 				"searchQueries");
-		// Get a list of String file content (line items) from the test file.
-		List<String> testData = AtlasFileUtils.getFileContentList(inputFile);
-
-		// We will be returning an iterator of Object arrays so create that
-		// first.
-		List<Object[]> dataToBeReturned = new ArrayList<Object[]>();
-
-		// Populate our List of Object arrays with the file content.
-		for (String userData : testData) {
-			dataToBeReturned.add(new Object[] { userData });
-		}
-		// return the iterator - testng will initialize the test class and calls
-		// the test method with each of the content of this iterator.
-		return dataToBeReturned.iterator();
-
+		return AtlasFileUtils.getData(inputFile);
 	}
+	
+	@DataProvider(name = AtlasConstants.GUID)
+	public static Iterator<Object[]> guidDataProvider(ITestContext context) {
+		// Get the input file path from the ITestContext
+		String inputFile = context.getCurrentXmlTest().getParameter("guid");
+		return AtlasFileUtils.getData(inputFile);
+	}
+	
 
 	@DataProvider(name = AtlasConstants.SEARCH_TABLE_HEADERS)
 	public static String[][] tableHeaders() {

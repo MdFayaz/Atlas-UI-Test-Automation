@@ -14,10 +14,12 @@
 	<test name="AtlasUIAutomationTests" preserve-order="true">
 		<parameter name="invalidSearchData" value="abc!@#" />
 		<parameter name="searchQueries" value="src/test/data/searchqueries.txt" />
+		<parameter name="guid" value="src/test/data/guid.txt" />
+		<parameter name="validateLineage" value="Metric:084f35c8-6ca2-4aea-b8d5-dcc45297d435"/>
 		<classes>
 			<class name="org.apache.atlas.seleniumtests.HomePageTest" />
-			<class name="org.apache.atlas.seleniumtests.SearchPageTest" />
-			<class name="org.apache.atlas.seleniumtests.TagsPageTest" />
+			<!-- <class name="org.apache.atlas.seleniumtests.SearchPageTest" />
+			<class name="org.apache.atlas.seleniumtests.TagsPageTest" /> -->
 			<class name="org.apache.atlas.seleniumtests.LineagePageTest" />
 		</classes>
 	</test>

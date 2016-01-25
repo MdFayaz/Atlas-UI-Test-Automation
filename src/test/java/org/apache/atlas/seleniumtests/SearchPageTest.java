@@ -76,7 +76,7 @@ public class SearchPageTest extends WebDriverWrapper {
 	}
 
 	@Test(dataProvider = AtlasConstants.SEARCH_STRING, dataProviderClass = SearchPage.class)
-	public void validatePagination(String token) {
+	public void validateSearchQueries(String token) {
 		LOGGER.info("STARTED: Test validatePagination");
 			searchPage.searchQuery(token.toString());
 			int searchCount = searchPage.getSearchResultCount();

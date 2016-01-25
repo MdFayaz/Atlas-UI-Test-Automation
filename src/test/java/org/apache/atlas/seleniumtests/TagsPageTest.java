@@ -44,7 +44,7 @@ public class TagsPageTest extends WebDriverWrapper {
 	}
 	
 	@Test
-	public void addAttribute(){
+	public void createTagWithAttribute(){
 		LOGGER.info("STARTED: Test Create Attribute");
 		tagsPage.navigateToTagsTab();
 		tagsPage.

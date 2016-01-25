@@ -2,6 +2,7 @@ package org.apache.atlas.seleniumtests;
 
 import org.apache.atlas.objectwrapper.WebDriverWrapper;
 import org.apache.log4j.Logger;
+import org.atlas.testHelper.AtlasConstants;
 import org.atlas.ui.pages.LineagePage;
 import org.atlas.ui.pages.SearchPage;
 import org.testng.Assert;
@@ -30,11 +31,10 @@ public class LineagePageTest extends WebDriverWrapper {
 		LOGGER.info("ENDED: Test testPageElements from Lineage Page");
 	}	
 	
-	@Test
-	public void validateBackToPageFunctionality() {
+	@Test(dataProvider = AtlasConstants.LINEAGE_DATA, dataProviderClass = SearchPage.class)
+	public void validateBackToPageFunctionality(String query) {
 		LOGGER.info("STARTED: validateBackToPageLink");
-		searchPage.searchQuery("Metric");
-		lineagePage.clickOnSearchData("134a83e1-68fc-4614-a0bb-8c24634dab29");
+		lineagePage.goToLineagePageFor(query);
 		Assert.assertEquals(lineagePage.validateBackToPageLink(), true, "BackToPage link enabled");
 		lineagePage.clickOnBackToPageLink();
 		Assert.assertEquals(searchPage.isTableDisplayed(), true,
@@ -42,20 +42,22 @@ public class LineagePageTest extends WebDriverWrapper {
 		LOGGER.info("ENDED: validateBackToPageLink");
 	}
 	
-	@Test
-	public void validateLineagePage(){
+	@Test(dataProvider = AtlasConstants.GUID, dataProviderClass = SearchPage.class)
+	public void validateLineagePage(String queryToGuid) {
 		LOGGER.info("STARTED: validateLineagePage");
-		 lineagePage.goToLineagePageFor("Fact:0de1ae11-b498-484f-965f-1019501d3870");
-		 Assert.assertEquals(true, lineagePage.validateGraphSection(), "Graphs Section loaded");
-		 Assert.assertEquals(true, lineagePage.isPageDataDisplayed(), "Details section displayed");
+		lineagePage.goToLineagePageFor(queryToGuid);
+		Assert.assertEquals(true, lineagePage.validateGraphSection(),
+				"Graphs Section loaded");
+		Assert.assertEquals(true, lineagePage.isPageDataDisplayed(),
+				"Details section displayed");
 		LOGGER.info("ENDED: validateLineagePage");
 	}
 	
-	@Test
-	public void validateLineagePageTabs() {
+	@Test(dataProvider = AtlasConstants.LINEAGE_DATA, dataProviderClass = SearchPage.class)
+	public void validateLineagePageTabs(String query) {
 		LOGGER.info("STARTED: validateLineagePageTabs");
 		lineagePage
-				.goToLineagePageFor("Fact:0de1ae11-b498-484f-965f-1019501d3870");
+				.goToLineagePageFor(query);
 		boolean allTabsClicked = lineagePage.clickOnAllTabs();
 		Assert.assertTrue(allTabsClicked, "All tabs clicked in lineage page");
 		LOGGER.info("ENDED: validateLineagePageTabs");
