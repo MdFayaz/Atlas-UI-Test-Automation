@@ -24,11 +24,18 @@ import org.apache.log4j.PropertyConfigurator;
 import org.atlas.testHelper.AtlasConstants;
 import org.atlas.ui.pages.HomePage;
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.Point;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.testng.log4testng.Logger;
+import org.testng.xml.XmlTest;
 
 import com.apache.atlas.listener.AtlasDriverEventListener;
 /**
@@ -37,7 +44,7 @@ import com.apache.atlas.listener.AtlasDriverEventListener;
 public class WebDriverWrapper {
 	private static final Logger LOGGER = Logger.getLogger(WebDriverWrapper.class);
 	
-	private static WebDriver ffDriver;
+	private static WebDriver webDriver;
 	protected static EventFiringWebDriver driver;
 	protected static HomePage homePage;
 	protected static WebElementWrapper webElement;
@@ -47,24 +54,54 @@ public class WebDriverWrapper {
 		WebDriverWrapper.driver = driver;
 	}
 	
-	public static WebDriver getDriver() {
-		/*if(AtlasConstants.BROWSER_TYPE.equals("firefox")){
-			ffDriver = new FirefoxDriver();
-		} else if (AtlasConstants.BROWSER_TYPE.equals("chrome")) {
-			System.setProperty("webdriver.chrome.driver", "");
-			ffDriver = new ChromeDriver();
-		}*/
+	private static WebDriver appConfig(XmlTest config){
+//		AtlasConstants.UI_URL = config.getParameter("app_url");
+		String serverIP = config.getParameter("server_ip");
+		String serverPort = config.getParameter("server_port");
+		String browserName = config.getParameter("browserName");
+		int browserHeight = Integer.parseInt(config.getParameter("browser_window_height"));
+		int browserWidth = Integer.parseInt(config.getParameter("browser_window_width"));
+		DesiredCapabilities capabilities = null;
 		
-		if(ffDriver == null) {
-			ffDriver = new FirefoxDriver();
-			driver = new EventFiringWebDriver(ffDriver);
-			AtlasDriverEventListener driverLister = new AtlasDriverEventListener();
-			driver.register(driverLister);
-			driver.manage().window().maximize();
-			webElement = new WebElementWrapper();
-			PropertyConfigurator.configure("log4j.properties");
-			homePage = new HomePage();
+		if(browserName.contains("firefox")){
+			capabilities = DesiredCapabilities.firefox();
+            capabilities.setPlatform(Platform.ANY);
+            webDriver = new FirefoxDriver(capabilities);
+		}else  if (browserName.contains("chrome") || browserName.equalsIgnoreCase("chrome")) {
+
+            LOGGER.info("Configuring settings for Chrome");
+            // Google Chrome Driver
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--disable-web-security");
+            options.addArguments("--start-maximized");
+
+            // For use with RemoteWebDriver:
+            capabilities = DesiredCapabilities.chrome();
+            capabilities.setCapability(ChromeOptions.CAPABILITY, options);
+            webDriver = new ChromeDriver(capabilities);
+        }
+		AtlasConstants.UI_URL = "http://" + serverIP + ":"+ serverPort;
+		webDriver.manage().window().setPosition(new Point(0,0));
+		Dimension dimenssion = new Dimension(browserHeight, browserWidth);
+		webDriver.manage().window().setSize(dimenssion);
+		return webDriver;
+	}
+	
+	public static WebDriver getDriver(){
+		if(driver != null){
+			return driver;
 		}
+		return null;
+	}
+	
+	public static WebDriver setupConfig(XmlTest config) {
+		driver = new EventFiringWebDriver(appConfig(config));
+		AtlasDriverEventListener driverLister = new AtlasDriverEventListener();
+		driver.register(driverLister);
+		driver.manage().window().maximize();
+		webElement = new WebElementWrapper();
+		PropertyConfigurator.configure("log4j.properties");
+		homePage = new HomePage();
 		return driver;
 	}
 

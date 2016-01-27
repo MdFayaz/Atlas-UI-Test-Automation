@@ -8,6 +8,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlTest;
 
 public class TagsPageTest extends WebDriverWrapper {
 
@@ -15,8 +16,8 @@ public class TagsPageTest extends WebDriverWrapper {
 	private TagsPage tagsPage = null;
 	long testExecutionStartTime;
 
-	@BeforeClass
-	public void loadTagsTest(){
+	@BeforeClass(description = "TagsPage Test Setup")
+	public void loadTagsTest(XmlTest config){
 		tagsPage = new TagsPage();
 		tagsPage.launchApp();
 	}
@@ -43,7 +44,7 @@ public class TagsPageTest extends WebDriverWrapper {
 	}
 	
 	@Test
-	public void addAttribute(){
+	public void createTagWithAttribute(){
 		LOGGER.info("STARTED: Test Create Attribute");
 		tagsPage.navigateToTagsTab();
 		tagsPage.
@@ -64,7 +65,7 @@ public class TagsPageTest extends WebDriverWrapper {
 		LOGGER.info("ENDED: Test duplicateTagName");
 	}
 	
-	@Test
+	@Test 
 	public void addFunctionalTestTag(){
 		LOGGER.info("STARTED: Test add Tag");
 		tagsPage.navigateToTagsTab();

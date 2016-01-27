@@ -1,17 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <suite name="AtlasSuite" parallel="tests">
-	<parameter name="browserType" value="firefox" />
 	<listeners>
 		<listener class-name="com.apache.atlas.listener.AtlasTestReportListener" />
 	</listeners>
-
-	<test name="TestExecution">
+	<parameter name="browserName" value="firefox" />
+	<!--The height of the browser window to be used for the tests. -->
+	<parameter name="browser_window_height" value="1600" />
+	<!--The height of the browser window to be used for the tests. -->
+	<parameter name="browser_window_width" value="900" />
+	<parameter name="server_ip" value="162.249.6.39" />
+	<parameter name="server_port" value="21000" />
+	<test name="AtlasUIAutomationTests" preserve-order="true">
+		<parameter name="invalidSearchData" value="abc!@#" />
+		<parameter name="searchQueries" value="src/test/data/searchqueries.txt" />
+		<parameter name="guid" value="src/test/data/guid.txt" />
+		<parameter name="validateLineage" value="Metric:084f35c8-6ca2-4aea-b8d5-dcc45297d435"/>
 		<classes>
-			 <class name="org.apache.atlas.seleniumtests.HomePageTest" />
-			 <class name="org.apache.atlas.seleniumtests.SearchPageTest" /> 
-			 <class name="org.apache.atlas.seleniumtests.TagsPageTest" 	/>
-			 <class name="org.apache.atlas.seleniumtests.LineagePageTest" />
+			<class name="org.apache.atlas.seleniumtests.HomePageTest" />
+			<!-- <class name="org.apache.atlas.seleniumtests.SearchPageTest" />
+			<class name="org.apache.atlas.seleniumtests.TagsPageTest" /> -->
+			<class name="org.apache.atlas.seleniumtests.LineagePageTest" />
 		</classes>
 	</test>
 </suite>

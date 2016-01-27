@@ -31,6 +31,7 @@ import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlTest;
 
 /**
  * Base class for test classes.
@@ -41,14 +42,13 @@ public class HomePageTest extends WebDriverWrapper {
 
 	private HomePage homePage = null;
 	
-	@BeforeSuite
-	public void setup(){
-		getDriver();
+	@BeforeSuite(description = "Test setup")
+	public void setup(XmlTest config){
+		setupConfig(config);
 	}
-
-	@BeforeClass
-	public void loadHomeTest() {
-		testExecutionStartTime = System.currentTimeMillis();
+	
+	@BeforeClass(description = "HomePage Test Setup")
+	public void loadHomeTest(XmlTest config) {
 		homePage = new HomePage();
 		homePage.launchApp();
 	}
@@ -56,8 +56,6 @@ public class HomePageTest extends WebDriverWrapper {
 	@AfterSuite
 	public void tearDown() {
 		closeBrowser();
-		AtlasDriverUtility.testSuiteExecutionTime(testExecutionStartTime,
-				" execute entire test suite");
 		/*
 		  SendReport.sendReportByEmail("fayazm@mprglobalsolutions.com",
 		  "Fayaz@786", "fayazm@mprglobalsolutions.com", "Test Excution Report",

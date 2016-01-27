@@ -19,7 +19,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -114,15 +113,6 @@
 		<defaultGoal>clean</defaultGoal>
 		<pluginManagement>
 			<plugins>
-				<!-- <plugin>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
-					<configuration>
-						<fork>true</fork>
-						<executable>${JAVA_HOME}/bin/javac</executable>
-					</configuration>
-				</plugin> -->
-
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -140,6 +130,7 @@
 						<systemPropertyVariables>
 							<org.uncommons.reportng.escape-output>false</org.uncommons.reportng.escape-output>
 						</systemPropertyVariables>
+						<reportsDirectory>${project.build.directory}/test-output</reportsDirectory>
 						<properties>
 							<property>
 								<name>usedefaultlisteners</name>
@@ -154,4 +145,13 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.6</version>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

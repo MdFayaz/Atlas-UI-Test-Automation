@@ -28,7 +28,6 @@ public class WebElementWrapper {
 		try {
 			isDisplayed = element.isDisplayed();
 		} catch (NoSuchElementException nsee){
-			AtlasDriverUtility.getScreenshot("NoSuchElementException_"+element.getText());
 			return false;
 		}
 		return isDisplayed;

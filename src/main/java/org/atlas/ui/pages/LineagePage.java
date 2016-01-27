@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.atlas.utilities.AtlasDriverUtility;
 import org.apcahe.atlas.pageobject.LineagePageElements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.log4testng.Logger;
@@ -69,9 +70,12 @@ public class LineagePage extends HomePage {
 						.tagName("g"));
 				int imgCount = 0;
 				if (graphTags.size() > 0) {
-					for (WebElement gTag : graphTags) {
-						gTag.findElement(By.tagName("img"));
-						imgCount++;
+					try {
+						for (WebElement gTag : graphTags) {
+							gTag.findElement(By.tagName("img"));
+							imgCount++;
+						}
+					} catch (NoSuchElementException nsee){
 					}
 					isElementsLoadedProperly = (imgCount > 0) ? isElementsLoadedProperly = true
 							: false;
@@ -104,7 +108,6 @@ public class LineagePage extends HomePage {
 			List<WebElement> paginationFields = lineagePageElements.paginationBoard
 					.findElements(By.tagName("li"));
 			int size = paginationFields.size();
-			System.out.println("size: " + size);
 			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
 				WebElement listItem = paginationFields.get(anchorTagIndex);
 				if (listItem.getAttribute("class").contains("active")) {
@@ -115,7 +118,6 @@ public class LineagePage extends HomePage {
 						isNextButtonDisabled = lineagePageElements.paginationNext
 								.isEnabled();
 					}
-					System.out.println("isTagFound: " + isTagFound);
 					if (!isTagFound) {
 						if (paginationFields.get(size - 1).getText()
 								.equals("Next")) {
@@ -131,7 +133,6 @@ public class LineagePage extends HomePage {
 				getAllTagsFromSearchResultTable();
 				searchTableForTag(tagName);
 				if (isTagFound) {
-					System.out.println("isTagFound: " + tagName + " anchorIndex: " + anchorTagIndex);
 					nameToElement = null;
 					nameToElement = new HashMap<String, WebElement>();
 					isTagFound = false;

@@ -46,9 +46,6 @@ public class AtlasDriverUtility  extends WebDriverWrapper {
 						"return document.readyState").equals("complete");
 			}
 		};
-		if (driver == null) {
-			driver = getDriver();
-		}
 		WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
 		return wait.until(pageLoadCondition);
 	}
