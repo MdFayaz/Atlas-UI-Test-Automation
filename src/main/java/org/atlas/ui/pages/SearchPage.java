@@ -342,7 +342,6 @@ public class SearchPage extends HomePage {
 			List<WebElement> options = slt.getOptions();
 			for(int index = 0 ; index < options.size(); index++){
 				String optionText = options.get(index).getText();
-				System.out.println(optionText);
 				if(optionText.equals(tagDefinitionName)){
 					options.get(index).click();
 				}
