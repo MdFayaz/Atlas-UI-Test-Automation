@@ -1,13 +1,50 @@
 Column select Column.name 
 from DB select DB.name
 from Table select Table.name
-from Table select Table - 
-from Table select Table.name , Table.owner 
+from Table select Table
+from Table select Table.name, Table.owner 
 from Table select Table.name, Table.owner, Table.creteTime
 from DB select DB.name, DB.createTime
 from DB select DB.name=‘sales'
 from DB select DB.name=‘Sales’ 
 Table select name,owner,createTime
-from Table select Table.name, Table.owner 
 from table select owner='joe'
 from hive_table select tableName
+from DB
+DB
+DB where name="Reporting"
+DB where DB.name="Reporting"
+DB name = "Reporting"
+DB DB.name = "Reporting"
+DB where name="Reporting" select name, owner
+DB where DB.name="Reporting" select name, owner
+DB has name
+DB where DB has name
+DB, Table
+DB is JdbcAccess
+from Table
+Table
+Table is Dimension
+Column where Column isa PII
+View is Dimension
+Column select Column.name
+Column select name
+Column where Column.name="customer_id"
+from Table select Table.name
+DB where (name = "Reporting")
+DB where (name = "Reporting") select name as col_0, owner as col_1
+DB where DB is JdbcAccess
+DB where DB has name
+DB Table
+DB where DB has name
+DB as db1 Table where (db1.name = "Reporting")
+DB where (name = "Reporting") select name as col_0, (createTime + 1) as col_1 
+Dimension
+JdbcAccess
+ETL
+Metric
+PII
+Table where name="sales_fact", columns
+Table where name="sales_fact", columns as column select column.name, column.dataType, column.comment
+from DataSet
+from Process

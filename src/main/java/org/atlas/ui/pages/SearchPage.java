@@ -17,11 +17,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
-import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 
-public class SearchPage extends AtlasDriverUtility {
+public class SearchPage extends HomePage {
 
 	private static final Logger LOGGER = Logger.getLogger(SearchPage.class);
 	static WebDriver driver = getDriver();
@@ -141,6 +140,17 @@ public class SearchPage extends AtlasDriverUtility {
 	public static boolean isPreviousButtonEnabled = true;
 	public static boolean isNextButtonEnabled = true;
 
+	public void validateSearchResultData(){
+		if (webElement.isElementExists(searchPageElements.paginationBoard)) {
+			List<WebElement> paginationFields = searchPageElements.paginationBoard
+					.findElements(By.tagName("li"));
+			int size = paginationFields.size();
+			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
+				
+			}
+		}
+	}
+	
 	public void clickOnTag(String tagName) {
 		if (webElement.isElementExists(searchPageElements.paginationBoard)) {
 			List<WebElement> paginationFields = searchPageElements.paginationBoard
@@ -181,6 +191,77 @@ public class SearchPage extends AtlasDriverUtility {
 			}
 		}
 	}
+	
+	String tagNameContainsGuid ;
+	
+	private boolean getAllNamColData(String tagName) {
+		boolean isCellDataGuid = false;
+		List<WebElement> tableRows = searchPageElements.resultTable
+				.findElements(By.tagName("tr"));
+		LOGGER.info("Search result count: " + tableRows.size() + " for tag Name " + tagName);
+		int colIndex = getColIndex(tableRows.get(0), "name");
+		for (int index = 1; index < tableRows.size(); index++) {
+			List<WebElement> tableCellData = tableRows.get(index).findElements(
+					By.tagName("td"));
+			if(tableCellData.size() > 0) {
+				WebElement firstCol = tableCellData.get(colIndex).findElement(
+						By.tagName("a"));
+				String key = firstCol.getText();
+				if(key.contains("-")) {
+					if(getHyperCharCount(key) > 3) {
+						isCellDataGuid = true;
+						tagNameContainsGuid = key;
+						break;
+					}
+				}
+			}
+		}
+		return isCellDataGuid;
+	}
+	
+	private int getColIndex(WebElement tableRow, String colNameToIndex){
+		List<WebElement> tableHeaders = tableRow.findElements(By.tagName("th"));
+		for(int colIndex = 0; colIndex <  tableHeaders.size(); colIndex++ ) {
+			if(tableHeaders.get(colIndex).getText().equals(colNameToIndex)){
+				return colIndex;
+			}
+		}
+		LOGGER.error("No column with name as 'name' found");
+		return 0;
+	}
+	
+	private int getHyperCharCount(String colName){
+		int counter = 0;
+		for(int index = 0; index < colName.length(); index++){
+			if(colName.charAt(index) == '-') {
+				counter++;
+			}
+		}
+		return counter;
+	}
+	
+	public boolean validateNameCol(String tagName) {
+		AtlasDriverUtility.customWait(5);
+		boolean isNameColContainsGuid = false;
+		if (webElement.isElementExists(searchPageElements.paginationBoard)) {
+			List<WebElement> paginationFields = searchPageElements.paginationBoard
+					.findElements(By.tagName("li"));
+			int size = paginationFields.size();
+			for (int anchorTagIndex = 1; anchorTagIndex < size - 1; anchorTagIndex++) {
+				WebElement listItem = paginationFields.get(anchorTagIndex);
+				if(getAllNamColData(tagName)) {
+					isNameColContainsGuid = true;
+					break;
+				}
+				WebElement nextPage = listItem.findElement(By.tagName("a"));
+				nextPage.click();
+				AtlasDriverUtility.waitUntilPageRefresh(driver);
+			}
+		} else {
+			LOGGER.error("Pagination is not displayed");
+		}
+		return isNameColContainsGuid;
+	}
 
 	public boolean validateSearchTagsTag(String tagsTagName) {
 		boolean isTagDisplayed = false;
@@ -216,57 +297,84 @@ public class SearchPage extends AtlasDriverUtility {
 								: !nextLinkEnabled;
 					}
 				}
-				getAllToolsFromSearchResultTable(tagName);
-				WebElement anchorTag = listItem.findElement(By.tagName("a"));
-				anchorTag.click();
+				if(!getAllToolsFromSearchResultTable(tagName)) {
+					WebElement anchorTag = listItem.findElement(By.tagName("a"));
+					anchorTag.click();
+					break;
+				}
 				AtlasDriverUtility.waitUntilPageRefresh(driver);
 			}
 		}
 	}
 
-	private void getAllToolsFromSearchResultTable(String colName) {
+	private boolean getAllToolsFromSearchResultTable(String tagName) {
+		boolean isToolsClicked = false;
 		List<WebElement> tableRows = searchPageElements.resultTable
 				.findElements(By.tagName("tr"));
+		int colIndex = getColIndex(tableRows.get(0), "Tools");
 		for (int index = 1; index < tableRows.size(); index++) {
 			List<WebElement> tableCellData = tableRows.get(index).findElements(
 					By.tagName("td"));
 			WebElement firstCol = tableCellData.get(0).findElement(
 					By.tagName("a"));
 			String key = firstCol.getText();
-			if (key.equalsIgnoreCase(colName)) {
+			if (key.equalsIgnoreCase(tagName)) {
 				if (tableCellData.size() > 2) {
-					WebElement fifthCol = tableCellData.get(4).findElement(
+					WebElement fifthCol = tableCellData.get(colIndex).findElement(
 							By.tagName("img"));
 					fifthCol.click();
+					isToolsClicked = true;
+					break;
 				}
 			}
 		}
 		AtlasDriverUtility.customWait(5);
-		handleModal();
+		return isToolsClicked;
 	}
 
-	private void handleModal() {
-		WebElement parentDiv1 = driver.findElement(By
-				.xpath("//*[@class='modal-content']"));
+	public void addTagFromTools(String tagDefinitionName) {
+		WebElement parentDiv1 = driver.findElement(By.xpath("//div[@role='dialog']"));
 		parentDiv1.click();
-		String toolTitle = parentDiv1.findElement(By.tagName("h4")).getText();
-		Assert.assertEquals(toolTitle, "Add tag");
-		WebElement selectTag = driver.findElement(By.id("tagDefinition"));
-		selectTag.click();
-		Select slt = new Select(selectTag);
-		slt.selectByValue("FTest");
-		AtlasDriverUtility.customWait(10);
-		WebElement saveBtn = driver.findElement(By
-				.xpath("//*[@class='btn btn-success']"));
+		if (webElement.isElementExists(parentDiv1)) {
+			WebElement selectTag = driver.findElement(By.id("tagDefinition"));
+			Select slt = new Select(selectTag);
+			selectTag.click();
+			List<WebElement> options = slt.getOptions();
+			for(int index = 0 ; index < options.size(); index++){
+				String optionText = options.get(index).getText();
+				System.out.println(optionText);
+				if(optionText.equals(tagDefinitionName)){
+					options.get(index).click();
+				}
+			}
+			slt.selectByValue(tagDefinitionName);
+			AtlasDriverUtility.customWait(5);
+		} else {
+			LOGGER.error("Add Tags dialogs didnt display after clicking from Tools column");
+		}
+	}
+	
+	public boolean validateAddedTagFromTools(String tagDefinitionName) {
+		boolean isTagAdded = false;
+		getAllTagsFromSearchResultTable();
+		int tagsCountBeforeAdding = nameToTagsMap.size();
+		WebElement saveBtn = driver.findElement(By.xpath("//*[@class='btn btn-success']"));
 		saveBtn.click();
 		AtlasDriverUtility.customWait(10);
-		// error msg is showing after clicking on save button
-		String errorMsg = "trait=FTest is already defined for entity=566dedbc-496d-4552-a702-2249298ca761";
-		if (errorMsg != null) {
-			WebElement cancelBtn = driver.findElement(By
-					.xpath("//*[@class='btn btn-warning']"));
-			cancelBtn.click();
+		getAllTagsFromSearchResultTable();
+		int tagsCountAfterAdding = nameToTagsMap.size();
+		if(webElement.isElementExists(driver.findElement(By.xpath("//div[@ng-show='isError']")))){
+			String errorMsg = driver.findElement(By.xpath("//div[@ng-show='isError']")).getText();
+			if(errorMsg.contains(tagDefinitionName)){
+				isTagAdded = true;
+				WebElement cancelBtn = driver.findElement(By
+						.xpath("//*[@class='btn btn-warning']"));
+				cancelBtn.click();
+			}
+		} else {
+			isTagAdded = (tagsCountBeforeAdding != tagsCountAfterAdding);
 		}
+		return isTagAdded;
 	}
 	
 	@DataProvider(name = AtlasConstants.INVALID_SEARCH_STRING)
@@ -298,6 +406,12 @@ public class SearchPage extends AtlasDriverUtility {
 		return AtlasFileUtils.getData(inputFile);
 	}
 	
+	@DataProvider(name = AtlasConstants.TAG_NAME)
+	public static Iterator<Object[]> nameDataProvider(ITestContext context) {
+		// Get the input file path from the ITestContext
+		String inputFile = context.getCurrentXmlTest().getParameter("searchQueries");
+		return AtlasFileUtils.getData(inputFile);
+	}
 
 	@DataProvider(name = AtlasConstants.SEARCH_TABLE_HEADERS)
 	public static String[][] tableHeaders() {

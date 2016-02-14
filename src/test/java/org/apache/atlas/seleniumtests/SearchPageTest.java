@@ -166,20 +166,29 @@ public class SearchPageTest extends WebDriverWrapper {
 		LOGGER.info("ENDED: Test validateFunctionalTestTag");
 	}
 	
-	//TODO: Bug [#HDPDGI-320] in application so commented the following test
 	/*@Test
-	public void validateToolsInSearchResult(){
+	public void validateToolsInSearchResult() {
 		LOGGER.info("STARTED: Test validateTagInSearchResult");
 		String SEARCH_QUERY = "Table";
 		searchPage.searchQuery(SEARCH_QUERY);
-		if(searchPage.getSearchResultCount() > 0){
+		if(searchPage.getSearchResultCount() > 0) {
 			Assert.assertFalse(SearchPage.isPreviousButtonDisabled, "Button 'Previous' disabled");
 			Assert.assertTrue(SearchPage.isNextButtonEnabled, "Button 'Next' enabled");
 			searchPage.clickOnTool("BA1");
+			searchPage.addTagFromTools("Dimension");
+			searchPage.validateAddedTagFromTools("Dimension");
 			Assert.assertTrue(SearchPage.isPreviousButtonEnabled, "Button 'Previous'  enabled");
 			Assert.assertFalse(!SearchPage.isNextButtonDisabled, "Button 'Next' disabled");
 		}
-		LOGGER.info("STARTED: Test validateToolsInSearchResult");
+		LOGGER.info("ENDED: Test validateToolsInSearchResult");
 	}*/
 
+	/*@Test(dataProvider = AtlasConstants.TAG_NAME, dataProviderClass = SearchPage.class)
+	public void invalidColNameValidation(String tagNameToBeValidate) {
+		LOGGER.info("STARTED: Test Invalid Column Name Validation");
+		searchPage.searchQuery(tagNameToBeValidate);
+		Assert.assertFalse(searchPage.validateNameCol(tagNameToBeValidate), 
+				"'Name' column contains guid");
+		LOGGER.info("ENDED: Test Invalid Column Name Validation");
+	}*/
 }
