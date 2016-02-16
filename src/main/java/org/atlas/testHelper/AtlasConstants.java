@@ -10,6 +10,7 @@ public class AtlasConstants {
 	public static String UI_URL;
 
 	public final static String GUID = "guid";
+	public final static String TAG_NAME = "tagName";
 	public final static String LINEAGE_DATA = "lineageData";
 	public final static String SEARCH_STRING = "searchDataFeed";
 	public final static String INVALID_SEARCH_STRING = "invalidSearchDataFeed";
