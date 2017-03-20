@@ -25,7 +25,7 @@ public class SendReport {
 
 	public static void main(String[] args) {
 		sendReportByEmail("fayazm@mprglobalsolutions.com",
-				"Fayaz@786", "fayazm@mprglobalsolutions.com",
+				"Password", "fayazm@mprglobalsolutions.com",
 				"Test Excution Report", "");
 	}
 	
